@@ -30,7 +30,7 @@
 
 |Java | Spring Boot | MongoDB  |  MySQL   | Scrapy |
 | :--------: | :--------: | :--------: | :------: | :-----: |
-|   ![java]   | ![spring]   | ![mongodb] | ![mysql] |![scrapy]|
+|   ![java]   | ![spring]   | ![mongo] | ![mysql] |![scrapy]|
 
 ### etc
 |Amazon EC2 | Amazon RDS |  Amazon S3 |
@@ -54,42 +54,42 @@
 
 ### 공모주 DB 구성
 <p align="center">
-<img src="./images/common/ipo.png">
+<img src="./images/issue/ipo.png">
 </p>
 
 ### 로그아웃 로직
 <p align="center">
-<img src="./images/common/logout1.png">
+<img src="./images/issue/logout1.png">
 </p>
 <p align="center">
-<img src="./images/common/logout2.png">
+<img src="./images/issue/logout2.png">
 </p>
 
 
 
 ### 삭제 로직 개선안 및 구현
 <p align="center">
-<img src="./images/common/delete1.png">
+<img src="./images/issue/delete1.png">
 </p>
 <p align="center">
-<img src="./images/common/delete2.png">
+<img src="./images//delete2.png">
 </p>
 
 
 ### 성능 체크(Jmeter)
 <p align="center">
-<img src="./images/common/traffic1.png">
+<img src="./images/issue/traffic1.png">
 </p>
 <p align="center">
-<img src="./images/common/traffic2.png">
+<img src="./images/issue/traffic2.png">
 </p>
 
 ### MSA구조 제안
 <p align="center">
-<img src="./images/common/msa1.png">
+<img src="./images/issue/msa1.png">
 </p>
 <p align="center">
-<img src="./images/common/msa2.png">
+<img src="./images/issue/msa2.png">
 </p>
 
 
