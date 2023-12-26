@@ -192,7 +192,7 @@ Temporary Items
 src/main/generated/**
 
 ###applicationproperties###
-src/resources/application.properites
+application.properties
 
 ###tests###
 build/reports/**
