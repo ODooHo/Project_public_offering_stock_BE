@@ -72,7 +72,7 @@
 <img src="./images/issue/delete1.png">
 </p>
 <p align="center">
-<img src="./images//delete2.png">
+<img src="./images/issue/delete2.png">
 </p>
 
 
