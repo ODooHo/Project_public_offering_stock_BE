@@ -2,8 +2,13 @@
 
 <p align="center">
   <br>
-  메인화면 추가 예정
-  <!-- <img src="./images/common/main.png"> -->
+  <img src="./images/common/1.jpg">
+  <img src="./images/common/2.jpg">
+  <img src="./images/common/3.jpg">
+  <img src="./images/common/4.jpg">
+  <img src="./images/common/5.jpg">
+  <img src="./images/common/6.jpg">
+
   <br>
 </p>
 
