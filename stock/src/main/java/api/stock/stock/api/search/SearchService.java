@@ -1,9 +1,9 @@
 package api.stock.stock.api.search;
 
 import api.stock.stock.api.community.board.BoardEntity;
-import api.stock.stock.api.community.board.BoardRepository;
+import api.stock.stock.api.community.board.BoardService;
 import api.stock.stock.api.ipo.IpoEntity;
-import api.stock.stock.api.ipo.IpoRepository;
+import api.stock.stock.api.ipo.IpoService;
 import api.stock.stock.global.response.ResponseDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +16,15 @@ import java.util.List;
 public class SearchService {
     private final ModelMapper modelMapper;
     private final SearchRepository searchRepository;
-    private final BoardRepository boardRepository;
-    private final IpoRepository ipoRepository;
+    private final BoardService boardService;
+    private final IpoService ipoService;
 
     @Autowired
-    public SearchService(ModelMapper modelMapper, SearchRepository searchRepository, BoardRepository boardRepository, IpoRepository ipoRepository) {
+    public SearchService(ModelMapper modelMapper, SearchRepository searchRepository, BoardService boardService, IpoService ipoService) {
         this.modelMapper = modelMapper;
         this.searchRepository = searchRepository;
-        this.boardRepository = boardRepository;
-        this.ipoRepository = ipoRepository;
+        this.boardService = boardService;
+        this.ipoService = ipoService;
     }
 
     public ResponseDto<List<SearchEntity>>getRecentBoard(String userEmail){
@@ -60,7 +60,7 @@ public class SearchService {
         try{
             search.setCategory("board");
             String searchWord = search.getSearchContent();
-            board = boardRepository.findByBoardTitleContains(searchWord);
+            board = boardService.searchBoard(searchWord);
             if (!searchRepository.existsByUserEmailAndSearchContent(userEmail,searchContent)){
                 searchRepository.save(search);
             }
@@ -81,7 +81,7 @@ public class SearchService {
         try {
             search.setCategory("ipo");
             String searchWord = search.getSearchContent();
-            ipo = ipoRepository.findByIpoNameContains(searchWord);
+            ipo = ipoService.searchIpo(searchWord);
             if (!searchRepository.existsByUserEmailAndSearchContent(userEmail,searchContent)){
                 searchRepository.save(search);
             }

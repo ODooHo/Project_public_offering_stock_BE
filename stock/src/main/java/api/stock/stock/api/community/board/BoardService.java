@@ -80,6 +80,20 @@ public class BoardService {
         return ResponseDto.setSuccess("Success", boardList);
     }
 
+    public Integer getLikeCount(Integer boardId){
+        BoardEntity board = null;
+        Integer result = null;
+        try{
+            board = boardRepository.findById(boardId).orElse(null);
+            result = board.getBoardLikeCount();
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        return result;
+    }
+
+
     public ResponseDto<PatchBoardResponseDto> patchBoard(String userEmail, Integer boardId, PatchBoardDto dto){
         BoardEntity board = boardRepository.findById(boardId).orElse(null);
         String boardUserEmail = board.getBoardWriterEmail();
@@ -133,6 +147,88 @@ public class BoardService {
         }
         return ResponseDto.setSuccess("Success" , "Delete Completed");
     }
+
+    public List<BoardEntity> searchBoard(String searchWord){
+        List<BoardEntity> result = new ArrayList<>();
+        try{
+            result = boardRepository.findByBoardTitleContains(searchWord);
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        return result;
+    }
+
+    public void increaseComment(Integer boardId){
+        BoardEntity board = null;
+        try{
+            board = boardRepository.findById(boardId).orElse(null);
+            Integer count = board.getBoardCommentCount() + 1;
+            board.setBoardCommentCount(count);
+            boardRepository.save(board);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void updateProfile(String userEmail, String profileName){
+        List<BoardEntity> boardList = boardRepository.findByBoardWriterEmail(userEmail);
+        try{
+            for (BoardEntity board : boardList) {
+                board.setBoardWriterProfile(profileName);
+                boardRepository.save(board);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+    public void updateLike(Integer boardId,Integer count){
+        BoardEntity board = null;
+        try{
+            board = boardRepository.findById(boardId).orElse(null);
+            board.setBoardLikeCount(count);
+            boardRepository.save(board);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void increaseLike(Integer boardId){
+        BoardEntity board = null;
+        try{
+            board = boardRepository.findById(boardId).orElse(null);
+            Integer count = board.getBoardLikeCount() + 1;
+            board.setBoardLikeCount(count);
+            boardRepository.save(board);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void decreaseLike(Integer boardId){
+        BoardEntity board = null;
+        try{
+            board = boardRepository.findById(boardId).orElse(null);
+            Integer count = board.getBoardLikeCount() - 1;
+            board.setBoardLikeCount(count);
+            boardRepository.save(board);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    public void setImageName(Integer boardId, String imageName) {
+        BoardEntity board = null;
+        try{
+            board = boardRepository.findById(boardId).orElse(null);
+            board.setBoardImage(imageName);
+            boardRepository.save(board);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
 
 
 }

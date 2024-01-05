@@ -55,5 +55,27 @@ public class UserService {
         return ResponseDto.setSuccess("Success","WithDraw Completed");
     }
 
+    public void setProfile(String userEmail, String profileName){
+        UserEntity user = null;
+        try{
+            user = userRepository.findById(userEmail).orElse(null);
+            user.setUserProfile(profileName);
+            userRepository.save(user);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteProfile(String userEmail){
+        UserEntity user = null;
+        try{
+            user = userRepository.findById(userEmail).orElse(null);
+            user.setUserProfile("default.jpg");
+            userRepository.save(user);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
 
 }

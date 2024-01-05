@@ -21,33 +21,33 @@ class CommentServiceTest {
     @Autowired
     private CommentService commentService;
 
-    @Test
-    public void writeComment() {
-        // Given
-        CommentDto dto = new CommentDto();
-        dto.setBoardId(1);
-        dto.setCommentWriterEmail("test@example.com");
-        dto.setCommentContent("2");
-        dto.setCommentWriterNickname("1");
-        // When
-        ResponseDto<CommentEntity> response = commentService.writeComment(2,dto);
-        // Then
-        log.info("Comment {}",response.getData());
-        assertThat(response.getMessage()).isEqualTo("Success");
-        assertThat(response.getData()).isNotNull();
-    }
-
 //    @Test
-//    public void getComment(){
-//        //Given
-//        Integer boardId = 1;
-//        //When
-//        ResponseDto<List<CommentEntity>> response = commentService.getComment(boardId);
-//        //Then
+//    public void writeComment() {
+//        // Given
+//        CommentDto dto = new CommentDto();
+//        dto.setBoardId(1);
+//        dto.setCommentWriterEmail("test@example.com");
+//        dto.setCommentContent("2");
+//        dto.setCommentWriterNickname("1");
+//        // When
+//        ResponseDto<CommentEntity> response = commentService.writeComment(2,dto);
+//        // Then
 //        log.info("Comment {}",response.getData());
 //        assertThat(response.getMessage()).isEqualTo("Success");
 //        assertThat(response.getData()).isNotNull();
 //    }
+
+    @Test
+    public void getComment(){
+        //Given
+        Integer boardId = 1;
+        //When
+        ResponseDto<List<CommentEntity>> response = commentService.getComment(boardId);
+        //Then
+        log.info("Comment {}",response.getData());
+        assertThat(response.getMessage()).isEqualTo("Success");
+        assertThat(response.getData()).isNotNull();
+    }
 //
 //    @Test
 //    public void patchComment(){

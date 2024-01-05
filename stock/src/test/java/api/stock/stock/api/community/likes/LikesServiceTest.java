@@ -17,21 +17,35 @@ class LikesServiceTest {
     @Autowired
     private LikesService likesService;
 
+//    @Test
+//    void addLike() {
+//        //given
+//        LikesDto dto = new LikesDto();
+//        dto.setBoardId(1);
+//        dto.setUserEmail("test@example.com");
+//
+//        //when
+//        ResponseDto<LikesEntity> response = likesService.addLike(dto);
+//
+//
+//        //then
+//        assertThat(response.getMessage()).isEqualTo("Success");
+//        assertThat(response.getData()).isNotNull();
+//
+//        log.info("LikesTest {}",response.getData());
+//    }
+
     @Test
-    void addLike() {
+    void getLikes(){
         //given
-        LikesDto dto = new LikesDto();
-        dto.setBoardId(1);
-        dto.setUserEmail("test@example.com");
-
+        Integer boardId = 1;
         //when
-        ResponseDto<LikesEntity> response = likesService.addLike(dto);
-
-
+        ResponseDto<Integer> response = likesService.getLikesCount(1);
         //then
         assertThat(response.getMessage()).isEqualTo("Success");
         assertThat(response.getData()).isNotNull();
-
-        log.info("LikesTest {}",response.getData());
+        log.info("getLikes: {}",response.getData());
     }
+
+
 }

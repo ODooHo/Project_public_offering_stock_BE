@@ -1,7 +1,7 @@
 package api.stock.stock.api.community.likes;
 
 import api.stock.stock.api.community.board.BoardEntity;
-import api.stock.stock.api.community.board.BoardRepository;
+import api.stock.stock.api.community.board.BoardService;
 import api.stock.stock.global.response.ResponseDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,36 +11,32 @@ import org.springframework.stereotype.Service;
 @Service
 public class LikesService {
     private final LikesRepository likesRepository;
-    private final BoardRepository boardRepository;
+    private final BoardService boardService;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public LikesService(LikesRepository likesRepository, BoardRepository boardRepository, ModelMapper modelMapper) {
+    public LikesService(LikesRepository likesRepository, BoardService boardService, ModelMapper modelMapper) {
         this.likesRepository = likesRepository;
-        this.boardRepository = boardRepository;
+        this.boardService = boardService;
         this.modelMapper = modelMapper;
     }
 
     public ResponseDto<LikesEntity> addLike(LikesDto dto){
-        LikesEntity likesEntity = modelMapper.map(dto, LikesEntity.class);
+        LikesEntity like= modelMapper.map(dto, LikesEntity.class);
         try{
-            boolean isLiked = likesRepository.existsByUserEmailAndBoardId(likesEntity.getUserEmail(), likesEntity.getBoardId());
+            boolean isLiked = likesRepository.existsByUserEmailAndBoardId(like.getUserEmail(), like.getBoardId());
             if (isLiked) {
                 return ResponseDto.setFailed("Already Liked");
             }
-            Integer likedBoard = likesEntity.getBoardId();
-            BoardEntity board = boardRepository.findById(likedBoard).orElse(null);
-            if(board != null) {
-                board.setBoardLikeCount(board.getBoardLikeCount() + 1);
-                boardRepository.save(board);
-                likesRepository.save(likesEntity);
-            }
+            Integer boardId = like.getBoardId();
+            boardService.increaseLike(boardId);
+            likesRepository.save(like);
         }catch (Exception e){
             e.printStackTrace();
             return ResponseDto.setFailed("DataBase Error");
         }
 
-        return ResponseDto.setSuccess("Success",likesEntity);
+        return ResponseDto.setSuccess("Success",like);
     }
 
     public ResponseDto<String> deleteLike(Integer boardId, String userEmail) {
@@ -48,12 +44,7 @@ public class LikesService {
             // 데이터베이스에서 사용자의 닉네임과 게시글 번호에 해당하는 좋아요 삭제
             likesRepository.deleteByBoardIdAndUserEmail(boardId, userEmail);
             // 해당 게시글의 좋아요 개수 감소
-            BoardEntity board = boardRepository.findById(boardId).orElse(null);
-            if (board != null) {
-                board.setBoardLikeCount(board.getBoardLikeCount() - 1);
-                boardRepository.save(board);
-            }
-
+            boardService.decreaseLike(boardId);
         }catch (Exception e){
             e.printStackTrace();
             return ResponseDto.setFailed("DataBase Error");
@@ -66,14 +57,15 @@ public class LikesService {
 
     public ResponseDto<Integer> getLikesCount(Integer boardId){
         Integer count = 0;
+        Integer check;
         BoardEntity board = null;
         try{
-            board = boardRepository.findById(boardId).orElse(null);
+            check = boardService.getLikeCount(boardId);
             count = likesRepository.countByBoardId(boardId);
-            if(!count.equals(board.getBoardLikeCount())){
-                board.setBoardLikeCount(count);
-                boardRepository.save(board);
+            if(count!=check){
+                boardService.updateLike(boardId,count);
             }
+
         }catch (Exception e){
             e.printStackTrace();
             return ResponseDto.setFailed("DataBase Error");

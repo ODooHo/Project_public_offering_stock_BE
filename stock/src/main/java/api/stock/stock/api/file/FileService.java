@@ -1,9 +1,9 @@
 package api.stock.stock.api.file;
 
 import api.stock.stock.api.community.board.BoardEntity;
-import api.stock.stock.api.community.board.BoardRepository;
-import api.stock.stock.api.user.UserEntity;
-import api.stock.stock.api.user.UserRepository;
+import api.stock.stock.api.community.board.BoardService;
+
+import api.stock.stock.api.user.UserService;
 import api.stock.stock.global.response.ResponseDto;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
@@ -18,16 +18,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.io.InputStream;
-import java.util.List;
+
 
 @Service
 @Slf4j
 public class FileService {
-    private final UserRepository userRepository;
-    private final BoardRepository boardRepository;
+
+    private final UserService userService;
+    private final BoardService boardService;
     private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
@@ -36,24 +35,24 @@ public class FileService {
     private String uploadDir;
 
     @Autowired
-    public FileService(UserRepository userRepository, BoardRepository boardRepository, AmazonS3 amazonS3) {
-        this.userRepository = userRepository;
-        this.boardRepository = boardRepository;
+    public FileService(UserService userService, BoardService boardService, AmazonS3 amazonS3) {
+        this.userService = userService;
+        this.boardService = boardService;
         this.amazonS3 = amazonS3;
     }
 
     public ResponseDto<String> uploadImage(MultipartFile boardImage, BoardEntity board) {
+        String imageName;
+        Integer boardId = board.getBoardId();
         try{
             if (boardImage != null){
-                String fileName = setFileName(boardImage,board);
-                board.setBoardImage(fileName);
-                String path = uploadDir + "img/" + fileName;
+                imageName = boardId + ".jpg";
+                boardService.setImageName(boardId,imageName);;
+                String path = uploadDir + "img/" + imageName;
                 uploadFileToS3(boardImage,path);
             }else{
-                board.setBoardImage(null);
+                boardService.setImageName(boardId, null);
             }
-
-            boardRepository.save(board);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDto.setFailed("DataBase Error!");
@@ -63,24 +62,15 @@ public class FileService {
     }
 
     public ResponseDto<String> setProfile(MultipartFile file, String userEmail) {
-        UserEntity user = userRepository.findById(userEmail).orElse(null);
 
-        List<BoardEntity> boardEntity = boardRepository.findByBoardWriterEmail(userEmail);
-
-        String fileName = user.getUserEmail() + "." + "jpg";
+        String imageName = userEmail + ".jpg";
         try {
             // S3 버킷에 파일 업로드
-            uploadFileToS3(file, uploadDir + "profile/"+fileName);
+            uploadFileToS3(file, uploadDir + "profile/"+imageName);
+            userService.setProfile(userEmail,imageName);
+            boardService.updateProfile(userEmail,imageName);
 
-            user.setUserProfile(fileName);
-            userRepository.save(user);
-
-            for (BoardEntity board : boardEntity) {
-                board.setBoardWriterProfile(fileName);
-                boardRepository.save(board);
-            }
-
-            return ResponseDto.setSuccess("Success", fileName);
+            return ResponseDto.setSuccess("Success", imageName);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDto.setFailed("Database or S3 Error");
@@ -88,25 +78,19 @@ public class FileService {
     }
 
     public ResponseEntity<byte[]> getProfileImage(String userEmail){
-        UserEntity user = new UserEntity();
-        user = userRepository.findById(userEmail).orElse(null);
-
-        String imageName = user.getUserProfile();
+        String imageName = userEmail + ".jpg";
 
         return getImage(imageName,"profile/");
     }
 
     public ResponseEntity<byte[]> getBoardImage(Integer boardId){
-        BoardEntity board = new BoardEntity();
-        board = boardRepository.findById(boardId).orElse(null);
-        String imageName = board.getBoardImage();
+        String imageName = boardId + ".jpg";
         return getImage(imageName,"img/");
     }
 
     public ResponseDto<String> deleteBoardImage(Integer boardId){
-        BoardEntity board = boardRepository.findById(boardId).orElse(null);
-        String fileName = board.getBoardImage();
-        String path = uploadDir + "img/" + fileName;
+        String imageName = boardId + ".jpg";
+        String path = uploadDir + "img/" + imageName;
         try{
             amazonS3.deleteObject(bucketName,path);
         }catch (AmazonS3Exception e){
@@ -118,12 +102,9 @@ public class FileService {
     }
 
     public ResponseDto<String> deleteProfileImage(String userEmail){
-        UserEntity user = userRepository.findById(userEmail).orElse(null);
-        user.setUserProfile("default.jpg");
-        String fileName = userEmail + ".jpg";
-        String path = uploadDir + "profile/" + fileName;
+        String imageName = userEmail + ".jpg";
+        String path = uploadDir + "profile/" + imageName;
         try{
-            userRepository.save(user);
             amazonS3.deleteObject(bucketName,path);
         }catch (AmazonS3Exception e){
             e.printStackTrace();
@@ -145,8 +126,7 @@ public class FileService {
                     .body(null);
         }
         try {
-            String extension = getExtension("", imageName); // 확장자 추출 로직 그대로 사용
-            String fileName = imageName + extension;
+            String fileName = imageName + ".jpg";
 
             S3Object s3Object = amazonS3.getObject(bucketName, uploadDir + path + fileName);
             S3ObjectInputStream objectInputStream = s3Object.getObjectContent();
@@ -155,13 +135,6 @@ public class FileService {
 
             HttpHeaders headers = new HttpHeaders();
             MediaType mediaType = MediaType.IMAGE_JPEG;
-
-
-            if (extension.equalsIgnoreCase(".jpg") || extension.equalsIgnoreCase(".jpeg")) {
-                mediaType = MediaType.IMAGE_JPEG;
-            } else if (extension.equalsIgnoreCase(".png")) {
-                mediaType = MediaType.IMAGE_PNG;
-            }
 
             headers.setContentType(mediaType);
 
@@ -190,41 +163,41 @@ public class FileService {
         }
     }
 
-    private String getExtension(String fileDirectory, String fileId){
-        File folder = new File(fileDirectory);
-
-        FilenameFilter filter = (dir, name) -> {
-            try{
-                return name.startsWith(fileId);
-            }catch(Exception e){
-                e.printStackTrace();
-                return false;
-            }
-        };
-
-        String[] files = folder.list(filter);
-
-        if (files == null || files.length == 0) {
-            return "";
-        }
-
-        String fileName = files[0];
-
-        // 확장자 추출
-        int dotIndex = fileName.lastIndexOf('.');
-        if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
-            return fileName.substring(dotIndex);
-        }
-        //파일이 없다면
-
-        return "";
-    }
-
-    private String setFileName(MultipartFile file, BoardEntity board) {
-        String originalFileName = file.getOriginalFilename();
-        String extension = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
-        String fileName = board.getBoardId() + "." + extension;
-        return fileName;
-    }
+//    private String getExtension(String fileDirectory, String fileId){
+//        File folder = new File(fileDirectory);
+//
+//        FilenameFilter filter = (dir, name) -> {
+//            try{
+//                return name.startsWith(fileId);
+//            }catch(Exception e){
+//                e.printStackTrace();
+//                return false;
+//            }
+//        };
+//
+//        String[] files = folder.list(filter);
+//
+//        if (files == null || files.length == 0) {
+//            return "";
+//        }
+//
+//        String fileName = files[0];
+//
+//        // 확장자 추출
+//        int dotIndex = fileName.lastIndexOf('.');
+//        if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
+//            return fileName.substring(dotIndex);
+//        }
+//        //파일이 없다면
+//
+//        return "";
+//    }
+//
+//    private String setFileName(MultipartFile file, BoardEntity board) {
+//        String originalFileName = file.getOriginalFilename();
+//        String extension = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
+//        String fileName = board.getBoardId() + "." + extension;
+//        return fileName;
+//    }
 
 }

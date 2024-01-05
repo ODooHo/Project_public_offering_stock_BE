@@ -41,5 +41,27 @@ public class IpoService {
         return ResponseDto.setSuccess("Success",result);
     }
 
+    public List<IpoEntity> findIpoByName(List<String> ipoList){
+        List<IpoEntity> result = new ArrayList<>();
+        try{
+            result = ipoRepository.findAllByIpoNameIn(ipoList);
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        return result;
+    }
+
+    public List<IpoEntity> searchIpo(String searchWord){
+        List<IpoEntity> result = new ArrayList<>();
+        try{
+            result = ipoRepository.findByIpoNameContains(searchWord);
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        return result;
+    }
+
 
 }

@@ -1,7 +1,6 @@
 package api.stock.stock.api.community.comment;
 
-import api.stock.stock.api.community.board.BoardEntity;
-import api.stock.stock.api.community.board.BoardRepository;
+import api.stock.stock.api.community.board.BoardService;
 import api.stock.stock.global.response.ResponseDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +14,13 @@ import java.util.List;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final ModelMapper modelMapper;
-    private final BoardRepository boardRepository;
-
+    private final BoardService boardService;
     @Autowired
-    public CommentService(CommentRepository commentRepository, ModelMapper modelMapper, BoardRepository boardRepository) {
+    public CommentService(CommentRepository commentRepository, ModelMapper modelMapper, BoardService boardService) {
 
         this.commentRepository = commentRepository;
         this.modelMapper = modelMapper;
-        this.boardRepository = boardRepository;
+        this.boardService = boardService;
     }
 
     public ResponseDto<List<CommentEntity>> getComment(Integer boardId) {
@@ -40,12 +38,9 @@ public class CommentService {
     public ResponseDto<CommentEntity> writeComment(Integer boardId, CommentDto dto) {
         CommentEntity comment = modelMapper.map(dto,CommentEntity.class);
         comment.setCommentWriteDate(LocalDate.now());
-        BoardEntity board = boardRepository.findById(boardId).orElse(null);
-        Integer count = board.getBoardCommentCount() + 1;
         try{
-            board.setBoardCommentCount(count);
+            boardService.increaseComment(boardId);
             commentRepository.save(comment);
-            boardRepository.save(board);
         }catch (Exception e){
             e.printStackTrace();
             return ResponseDto.setFailed("DataBase Error");

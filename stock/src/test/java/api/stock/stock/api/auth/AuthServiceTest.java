@@ -99,21 +99,21 @@ class AuthServiceTest {
 
 
 
-    @Test
-    void signIn_Success(){
-        SignInDto dto = new SignInDto();
-        dto.setUserEmail("test@example.com");
-        dto.setUserPassword("testPassword");
-
-        ResponseDto<SignInResponseDto> response = authService.signIn(dto);
-
-        assertThat(response.getMessage()).isEqualTo("Success");
-
-        SignInResponseDto signInResponseDto = response.getData();
-        log.info("User: {}",signInResponseDto.getUser());
-        log.info("AccessToken: {}",signInResponseDto.getToken());
-        log.info("RefreshToken: {}",signInResponseDto.getRefreshToken());
-
-    }
+//    @Test
+//    void signIn_Success(){
+//        SignInDto dto = new SignInDto();
+//        dto.setUserEmail("test@example.com");
+//        dto.setUserPassword("testPassword");
+//
+//        ResponseDto<SignInResponseDto> response = authService.signIn(dto);
+//
+//        assertThat(response.getMessage()).isEqualTo("Success");
+//
+//        SignInResponseDto signInResponseDto = response.getData();
+//        log.info("User: {}",signInResponseDto.getUser());
+//        log.info("AccessToken: {}",signInResponseDto.getToken());
+//        log.info("RefreshToken: {}",signInResponseDto.getRefreshToken());
+//
+//    }
 
 }

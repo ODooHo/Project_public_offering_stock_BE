@@ -1,7 +1,7 @@
 package api.stock.stock.api.ipo.favor;
 
 import api.stock.stock.api.ipo.IpoEntity;
-import api.stock.stock.api.ipo.IpoRepository;
+import api.stock.stock.api.ipo.IpoService;
 import api.stock.stock.global.response.ResponseDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,22 +14,22 @@ import java.util.List;
 public class FavorService {
 
     private final FavorRepository favorRepository;
-    private final IpoRepository ipoRepository;
+    private final IpoService ipoService;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public FavorService(FavorRepository favorRepository, IpoRepository ipoRepository, ModelMapper modelMapper) {
+    public FavorService(FavorRepository favorRepository, IpoService ipoService, ModelMapper modelMapper) {
         this.favorRepository = favorRepository;
-        this.ipoRepository = ipoRepository;
+        this.ipoService = ipoService;
         this.modelMapper = modelMapper;
     }
 
 
     public ResponseDto<List<IpoEntity>> getFavorList(String userEmail){
         List<IpoEntity> result = new ArrayList<>();
-        List<String> ipo = favorRepository.findIpoNameByUserEmail(userEmail);
+        List<String> ipoList = favorRepository.findIpoNameByUserEmail(userEmail);
         try{
-            result = ipoRepository.findAllByIpoNameIn(ipo);
+            result = ipoService.findIpoByName(ipoList);
         }catch (Exception e){
             e.printStackTrace();
             return ResponseDto.setFailed("DataBase Error");
