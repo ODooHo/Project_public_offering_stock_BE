@@ -90,6 +90,14 @@
 <img src="./images/issue/traffic2.png">
 </p>
 
+### 코드리뷰 후 개선사항
+<p align="center">
+<img src="./images/issue/review1.png">
+</p>
+<p align="center">
+<img src="./images/issue/review2.png">
+</p>
+
 ### MSA구조 제안
 <p align="center">
 <img src="./images/issue/msa1.png">
