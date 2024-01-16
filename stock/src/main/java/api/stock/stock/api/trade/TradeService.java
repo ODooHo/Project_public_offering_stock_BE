@@ -1,6 +1,7 @@
 package api.stock.stock.api.trade;
 
 import api.stock.stock.global.response.ResponseDto;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Service
 @Transactional
+@Slf4j
 public class TradeService {
     private final TradeRepository tradeRepository;
     private final ModelMapper modelMapper;
@@ -27,7 +29,7 @@ public class TradeService {
                 return ResponseDto.setFailed("Trade already Exist!");
             }
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
 
@@ -36,7 +38,7 @@ public class TradeService {
         try{
             tradeRepository.save(trade);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
         return ResponseDto.setSuccess("Success",trade);
@@ -53,7 +55,7 @@ public class TradeService {
         try{
             tradeRepository.deleteById(tradeId);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
         return ResponseDto.setSuccess("Success","Delete Completed");
@@ -65,7 +67,7 @@ public class TradeService {
         try{
             tradeList = tradeRepository.findByUserEmail(userEmail);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
 
@@ -77,7 +79,7 @@ public class TradeService {
         try{
             tradeRepository.deleteAllByUserEmail(userEmail);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
         return ResponseDto.setSuccess("Success","Delete Completed");

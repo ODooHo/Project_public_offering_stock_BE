@@ -3,6 +3,7 @@ package api.stock.stock.api.community.likes;
 import api.stock.stock.api.community.board.BoardEntity;
 import api.stock.stock.api.community.board.BoardService;
 import api.stock.stock.global.response.ResponseDto;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
+@Slf4j
 public class LikesService {
     private final LikesRepository likesRepository;
     private final BoardService boardService;
@@ -34,7 +36,7 @@ public class LikesService {
             boardService.increaseLike(boardId);
             likesRepository.save(like);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
 
@@ -48,7 +50,7 @@ public class LikesService {
             // 해당 게시글의 좋아요 개수 감소
             boardService.decreaseLike(boardId);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
 
@@ -69,7 +71,7 @@ public class LikesService {
             }
 
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
 

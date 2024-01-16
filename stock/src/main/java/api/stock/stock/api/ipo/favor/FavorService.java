@@ -3,6 +3,7 @@ package api.stock.stock.api.ipo.favor;
 import api.stock.stock.api.ipo.IpoEntity;
 import api.stock.stock.api.ipo.IpoService;
 import api.stock.stock.global.response.ResponseDto;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class FavorService {
 
     private final FavorRepository favorRepository;
@@ -31,7 +33,7 @@ public class FavorService {
         try{
             result = ipoService.findIpoByName(ipoList);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
         return ResponseDto.setSuccess("Success",result);
@@ -48,7 +50,7 @@ public class FavorService {
             }
             favorRepository.save(favor);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
         return ResponseDto.setSuccess("Success",favor);
@@ -66,7 +68,7 @@ public class FavorService {
         try{
             favorRepository.deleteByIpoName(ipoName);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
         return ResponseDto.setSuccess("Success","Delete Completed");

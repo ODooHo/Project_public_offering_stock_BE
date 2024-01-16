@@ -11,10 +11,12 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Transactional
 @Slf4j
 public class AuthService {
 
@@ -46,7 +48,7 @@ public class AuthService {
                 return ResponseDto.setFailed("Nickname already exist!");
             }
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error!");
         }
 
@@ -57,7 +59,7 @@ public class AuthService {
         try {
             userRepository.save(userEntity);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error!");
         }
         return ResponseDto.setSuccess("Success",userEntity);
@@ -69,7 +71,7 @@ public class AuthService {
                 return ResponseDto.setFailed("Email already exist!");
             }
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error!");
         }
         return ResponseDto.setSuccess("Success", "available Email");
@@ -81,13 +83,14 @@ public class AuthService {
                 return ResponseDto.setFailed("Nickname already exist!");
             }
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error!");
         }
         return ResponseDto.setSuccess("Success", "available Nickname");
     }
 
 
+    @Transactional(readOnly = true)
     public ResponseDto<SignInResponseDto> signIn(SignInDto dto){
         String userEmail = dto.getUserEmail();
         String userPassword = dto.getUserPassword();
@@ -103,7 +106,7 @@ public class AuthService {
                 return ResponseDto.setFailed("Different Password!");
             }
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error!");
         }
         userEntity.setUserPassword("");
@@ -112,7 +115,7 @@ public class AuthService {
         Integer exprTime = 1800000;
 //        Integer exprTime = 5000;
         String refreshToken = tokenProvider.createRefreshToken(userEmail);
-        Integer refreshExprTime = 360000000;
+        Integer refreshExprTime = 604800000;
 
 
         SignInResponseDto signInResponseDto = new SignInResponseDto(token,exprTime,refreshToken,refreshExprTime,userEntity);
@@ -125,7 +128,7 @@ public class AuthService {
             redisTemplate.opsForValue().set(token,"logout",expiration, TimeUnit.MILLISECONDS);
             redisTemplate.opsForSet().add("Blacklist",token);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error (Auth)");
         }
 
@@ -135,7 +138,6 @@ public class AuthService {
 
     public ResponseDto<RefreshResponseDto> getAccess(String refreshToken) {
         try {
-            System.out.println("refreshToken = " + refreshToken);
             String accessToken = tokenProvider.createAccessTokenFromRefreshToken(refreshToken);
             Integer exprTime = 1800000;
 //            Integer exprTime = 5000;
@@ -144,7 +146,7 @@ public class AuthService {
 
             return ResponseDto.setSuccess("Success", refreshResponseDto);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error!");
         }
     }

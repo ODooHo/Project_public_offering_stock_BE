@@ -2,7 +2,9 @@ package api.stock.stock.api.community.board;
 
 import api.stock.stock.api.file.FileService;
 import api.stock.stock.global.response.ResponseDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -10,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
+@Slf4j
 public class BoardService {
 
     private final BoardRepository boardRepository;
@@ -46,7 +50,7 @@ public class BoardService {
             fileService.uploadImage(boardImage,board);
             boardRepository.save(board);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
         return ResponseDto.setSuccess("Success",board);
@@ -60,7 +64,7 @@ public class BoardService {
             board.setBoardClickCount(current + 1);
             boardRepository.save(board);
         }catch (Exception e) {
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
         return ResponseDto.setSuccess("Success",board);
@@ -71,7 +75,7 @@ public class BoardService {
         try{
             boardList = boardRepository.findList();
         }catch (Exception e){
-            e.printStackTrace();
+
             return ResponseDto.setFailed("DataBase Error");
         }
 
@@ -85,7 +89,7 @@ public class BoardService {
             board = boardRepository.findById(boardId).orElse(null);
             result = board.getBoardLikeCount();
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return null;
         }
         return result;
@@ -108,7 +112,7 @@ public class BoardService {
             board.setBoardWriteDate(date);
             boardRepository.save(board);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
         PatchBoardResponseDto response = new PatchBoardResponseDto(board);
@@ -151,7 +155,7 @@ public class BoardService {
         try{
             result = boardRepository.findByBoardTitleContains(searchWord);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return null;
         }
         return result;
@@ -165,7 +169,7 @@ public class BoardService {
             board.setBoardCommentCount(count);
             boardRepository.save(board);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
         }
     }
 
@@ -177,7 +181,7 @@ public class BoardService {
                 boardRepository.save(board);
             }
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
         }
     }
 
@@ -189,7 +193,7 @@ public class BoardService {
             board.setBoardLikeCount(count);
             boardRepository.save(board);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
         }
     }
 
@@ -201,7 +205,7 @@ public class BoardService {
             board.setBoardLikeCount(count);
             boardRepository.save(board);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
         }
     }
 
@@ -213,7 +217,7 @@ public class BoardService {
             board.setBoardLikeCount(count);
             boardRepository.save(board);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
         }
     }
     public void setImageName(Integer boardId, String imageName) {
@@ -223,7 +227,7 @@ public class BoardService {
             board.setBoardImage(imageName);
             boardRepository.save(board);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
         }
     }
 

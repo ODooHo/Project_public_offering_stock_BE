@@ -2,13 +2,14 @@ package api.stock.stock.api.user;
 
 import api.stock.stock.api.file.FileService;
 import api.stock.stock.global.response.ResponseDto;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -37,7 +38,7 @@ public class UserService {
 
 
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error!");
         }
 
@@ -51,7 +52,7 @@ public class UserService {
         try{
             userRepository.deleteById(userEmail);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error!");
         }
         return ResponseDto.setSuccess("Success","WithDraw Completed");
@@ -64,7 +65,7 @@ public class UserService {
             user.setUserProfile(profileName);
             userRepository.save(user);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
         }
     }
 
@@ -75,7 +76,7 @@ public class UserService {
             user.setUserProfile("default.jpg");
             userRepository.save(user);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
         }
     }
 

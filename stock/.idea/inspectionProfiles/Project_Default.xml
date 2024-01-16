@@ -6,6 +6,7 @@
         <set>
           <option value="response" />
           <option value="newAccessToken" />
+          <option value="data" />
         </set>
       </option>
     </inspection_tool>

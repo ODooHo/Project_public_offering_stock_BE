@@ -10,7 +10,7 @@ public class SearchQueryDslRepositoryImpl implements SearchQueryDslRepository{
     @PersistenceContext
     EntityManager em;
 
-    private JPAQueryFactory queryFactory;
+    private final JPAQueryFactory queryFactory;
     private final QSearchEntity qSearchEntity = QSearchEntity.searchEntity;
 
     public SearchQueryDslRepositoryImpl(EntityManager em) {

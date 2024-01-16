@@ -58,7 +58,7 @@ public class FileService {
 
             boardRepository.save(board);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error!");
         }
 
@@ -85,7 +85,7 @@ public class FileService {
 
             return ResponseDto.setSuccess("Success", fileName);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("Database or S3 Error");
         }
     }
@@ -107,7 +107,7 @@ public class FileService {
         try{
             amazonS3.deleteObject(bucketName,path);
         }catch (AmazonS3Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("S3 Error");
         }
         return ResponseDto.setSuccess("Success","Delete Completed");
@@ -120,7 +120,7 @@ public class FileService {
         try{
             amazonS3.deleteObject(bucketName,path);
         }catch (AmazonS3Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("S3 Error");
         }
         return ResponseDto.setSuccess("Success","Delete Completed");
@@ -157,7 +157,7 @@ public class FileService {
         } catch (AmazonS3Exception e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -172,7 +172,7 @@ public class FileService {
             metadata.setContentLength(file.getSize());
             amazonS3.putObject(new PutObjectRequest(bucketName, s3Key, inputStream, metadata));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Database Error",e);
         }
     }
 
@@ -183,7 +183,7 @@ public class FileService {
 //            try{
 //                return name.startsWith(fileId);
 //            }catch(Exception e){
-//                e.printStackTrace();
+//                log.error("Database Error",e);
 //                return false;
 //            }
 //        };

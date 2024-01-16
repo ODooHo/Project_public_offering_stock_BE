@@ -10,10 +10,12 @@ import api.stock.stock.api.trade.TradeService;
 import api.stock.stock.api.user.UserService;
 import api.stock.stock.global.response.ResponseDto;
 import com.amazonaws.services.s3.AmazonS3;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class DeleteApplication {
 
     private final BoardService boardService;
@@ -25,13 +27,10 @@ public class DeleteApplication {
     private final SearchService searchService;
     private final UserService userService;
 
-    private final AmazonS3 amazonS3;
 
-
-    @Autowired
     public DeleteApplication(BoardService boardService, CommentService commentService, LikesService likesService,
                                   FileService fileService, FavorService favorService, TradeService tradeService,
-                                  SearchService searchService, UserService userService, AmazonS3 amazonS3) {
+                                  SearchService searchService, UserService userService) {
         this.boardService = boardService;
         this.commentService = commentService;
         this.likesService = likesService;
@@ -40,7 +39,6 @@ public class DeleteApplication {
         this.tradeService = tradeService;
         this.searchService = searchService;
         this.userService = userService;
-        this.amazonS3 = amazonS3;
     }
 
 
@@ -66,7 +64,7 @@ public class DeleteApplication {
             searchService.deleteByWithdraw(userEmail);
             userService.withDraw(userEmail);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
 

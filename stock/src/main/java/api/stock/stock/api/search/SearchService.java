@@ -5,6 +5,7 @@ import api.stock.stock.api.community.board.BoardService;
 import api.stock.stock.api.ipo.IpoEntity;
 import api.stock.stock.api.ipo.IpoService;
 import api.stock.stock.global.response.ResponseDto;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Service
 @Transactional
+@Slf4j
 public class SearchService {
     private final ModelMapper modelMapper;
     private final SearchRepository searchRepository;
@@ -34,7 +36,7 @@ public class SearchService {
         try{
             search = searchRepository.findRecent(userEmail,"board");
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             ResponseDto.setFailed("DataBase Error");
         }
 
@@ -46,7 +48,7 @@ public class SearchService {
         try{
             search = searchRepository.findRecent(userEmail,"ipo");
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             ResponseDto.setFailed("DataBase Error");
         }
 
@@ -67,7 +69,7 @@ public class SearchService {
                 searchRepository.save(search);
             }
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             ResponseDto.setFailed("DataBase Error");
         }
 
@@ -88,7 +90,7 @@ public class SearchService {
                 searchRepository.save(search);
             }
         }catch (Exception e){
-                e.printStackTrace();
+                log.error("Database Error",e);
                 ResponseDto.setFailed("DataBase Error");
         }
         return ResponseDto.setSuccess("Success",ipo);
@@ -99,7 +101,7 @@ public class SearchService {
         try{
             searchRepository.deleteById(searchId);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
 
@@ -111,7 +113,7 @@ public class SearchService {
         try{
             searchRepository.deleteAllByUserEmail(userEmail);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
         return ResponseDto.setSuccess("Success","Delete Completed");

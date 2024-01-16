@@ -2,6 +2,7 @@ package api.stock.stock.api.community.comment;
 
 import api.stock.stock.api.community.board.BoardService;
 import api.stock.stock.global.response.ResponseDto;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Service
 @Transactional
+@Slf4j
 public class CommentService {
     private final CommentRepository commentRepository;
     private final ModelMapper modelMapper;
@@ -30,7 +32,7 @@ public class CommentService {
         try{
             commentList = commentRepository.findByBoardId(boardId);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
 
@@ -44,7 +46,7 @@ public class CommentService {
             boardService.increaseComment(boardId);
             commentRepository.save(comment);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
         return ResponseDto.setSuccess("Success", comment);
@@ -65,7 +67,7 @@ public class CommentService {
             comment.setCommentWriteDate(date);
             commentRepository.save(comment);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
 
@@ -85,7 +87,7 @@ public class CommentService {
         try{
             commentRepository.deleteById(commentId);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
 
