@@ -1,13 +1,14 @@
 package api.stock.stock.api.file;
 
 import api.stock.stock.api.community.board.BoardEntity;
-import api.stock.stock.api.community.board.BoardService;
-
-import api.stock.stock.api.user.UserService;
+import api.stock.stock.api.community.board.BoardRepository;
+import api.stock.stock.api.user.UserEntity;
+import api.stock.stock.api.user.UserRepository;
 import api.stock.stock.global.response.ResponseDto;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,14 +20,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.util.List;
 
 
 @Service
 @Slf4j
 public class FileService {
 
-    private final UserService userService;
-    private final BoardService boardService;
+    private final UserRepository userRepository;
+    private final BoardRepository boardRepository;
     private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
@@ -34,25 +36,27 @@ public class FileService {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
+
     @Autowired
-    public FileService(UserService userService, BoardService boardService, AmazonS3 amazonS3) {
-        this.userService = userService;
-        this.boardService = boardService;
+    public FileService(UserRepository userRepository, BoardRepository boardRepository, AmazonS3 amazonS3) {
+        this.userRepository = userRepository;
+        this.boardRepository = boardRepository;
+
         this.amazonS3 = amazonS3;
     }
 
     public ResponseDto<String> uploadImage(MultipartFile boardImage, BoardEntity board) {
-        String imageName;
-        Integer boardId = board.getBoardId();
         try{
             if (boardImage != null){
-                imageName = boardId + ".jpg";
-                boardService.setImageName(boardId,imageName);;
-                String path = uploadDir + "img/" + imageName;
+                String fileName = board.getBoardId() + ".jpg";
+                board.setBoardImage(fileName);
+                String path = uploadDir + "img/" + fileName;
                 uploadFileToS3(boardImage,path);
             }else{
-                boardService.setImageName(boardId, null);
+                board.setBoardImage(null);
             }
+
+            boardRepository.save(board);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDto.setFailed("DataBase Error!");
@@ -62,15 +66,24 @@ public class FileService {
     }
 
     public ResponseDto<String> setProfile(MultipartFile file, String userEmail) {
+        UserEntity user = userRepository.findById(userEmail).orElse(null);
 
-        String imageName = userEmail + ".jpg";
+        List<BoardEntity> boardEntity = boardRepository.findByBoardWriterEmail(userEmail);
+
+        String fileName = user.getUserEmail() + "." + "jpg";
         try {
             // S3 버킷에 파일 업로드
-            uploadFileToS3(file, uploadDir + "profile/"+imageName);
-            userService.setProfile(userEmail,imageName);
-            boardService.updateProfile(userEmail,imageName);
+            uploadFileToS3(file, uploadDir + "profile/"+fileName);
 
-            return ResponseDto.setSuccess("Success", imageName);
+            user.setUserProfile(fileName);
+            userRepository.save(user);
+
+            for (BoardEntity board : boardEntity) {
+                board.setBoardWriterProfile(fileName);
+                boardRepository.save(board);
+            }
+
+            return ResponseDto.setSuccess("Success", fileName);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDto.setFailed("Database or S3 Error");
