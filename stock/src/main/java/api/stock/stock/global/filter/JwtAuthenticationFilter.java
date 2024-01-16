@@ -6,6 +6,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
@@ -21,6 +22,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 @Component
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     //request가 들어왔을 떄 request Header의 authorization 필드의 bearer token값을 가져옴
     // 가져온 토큰을 검증하고 검증 결과를 securityContext에 추가
@@ -29,7 +31,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
     private final RedisTemplate redisTemplate;
 
-    @Autowired
     public JwtAuthenticationFilter(TokenProvider tokenProvider, RedisTemplate redisTemplate) {
         this.tokenProvider = tokenProvider;
         this.redisTemplate = redisTemplate;
@@ -61,7 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     if (refreshToken != null) {
                         String newAccessToken = tokenProvider.createAccessTokenFromRefreshToken(refreshToken);
 
-                        if (newAccessToken != null) {
+                        if (newAccessToken != null && !newAccessToken.equals("Not Authenticated User!")) {
                             userEmail = tokenProvider.validate(newAccessToken);
                             // 새로 발급한 AccessToken으로 SecurityContext를 업데이트
                             AbstractAuthenticationToken authentication =
@@ -90,7 +91,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 response.addHeader("data","Blacklist");
             }
             else{
-                e.printStackTrace();
+                log.error("Database Error",e);
             }
         }
 

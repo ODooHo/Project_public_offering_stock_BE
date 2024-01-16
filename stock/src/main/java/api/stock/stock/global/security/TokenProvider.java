@@ -2,12 +2,17 @@ package api.stock.stock.global.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.types.RedisClientInfo;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 //jwt : 전자 서명이 된 토큰
 //json 형태로 구성된 토큰
@@ -16,10 +21,18 @@ import java.util.Date;
 // header : type (해당 토큰의 타입), alg (토큰을 서명하기위해 사용된 해시 알고리즘)
 // payload : sub (해당 토큰의 주인), iat (토큰이 발행된 시간), exp(토큰이 만료되는 시간)
 @Service
+@Slf4j
 public class TokenProvider {
     //Jwt 생성 및 검증을 위한 키
     @Value("{secretKey}")
     private String SECURITY_KEY;
+
+    private final RedisTemplate<String, String> redisTemplate;
+
+    public TokenProvider(RedisTemplate<String, String> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
+
     //jwt 생성하는 메서드
     public String createAccessToken(String userEmail){
 //        Date exprTime = Date.from(Instant.now().plus(5, ChronoUnit.SECONDS));
@@ -40,15 +53,19 @@ public class TokenProvider {
         try {
             // Refresh Token의 유효성을 검증
             Claims claims = Jwts.parser().setSigningKey(SECURITY_KEY).parseClaimsJws(refreshToken).getBody();
-
-            // Refresh Token의 주인 (userEmail) 가져오기
             String userEmail = claims.getSubject();
 
-            // 여기에서 필요한 추가 로직을 구현하여 새로운 Access Token을 생성하고 반환
-            String newAccessToken = createAccessToken(userEmail);
-            return newAccessToken;
+
+            String storedRefreshToken = redisTemplate.opsForValue().get(userEmail);
+
+
+            if (refreshToken.equals(storedRefreshToken)) {
+                return createAccessToken(userEmail);
+            } else {
+                return "Not Authenticated User!";
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Database Error",e);
             return null;
         }
     }
@@ -56,13 +73,23 @@ public class TokenProvider {
     public String createRefreshToken(String userEmail) {
         Date exprTime = Date.from(Instant.now().plus(7,ChronoUnit.DAYS));
 
-        return Jwts.builder()
-                .signWith(SignatureAlgorithm.HS512,SECURITY_KEY)
+        long refreshExprTime = 604800000L;
+
+        String refreshToken = Jwts.builder()
+                .signWith(SignatureAlgorithm.HS512, SECURITY_KEY)
                 .setSubject(userEmail)
                 .setIssuedAt(new Date())
                 .setExpiration(exprTime)
                 .compact();
 
+        redisTemplate.opsForValue().set(
+                userEmail,
+                refreshToken,
+                refreshExprTime,
+                TimeUnit.MILLISECONDS
+        );
+
+        return refreshToken;
     }
 
     public Long getExpiration(String accessToken) {
@@ -73,7 +100,7 @@ public class TokenProvider {
             Long now = new Date().getTime();
             return (expiration.getTime() - now);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Database Error",e);
             return null;
         }
     }
@@ -87,7 +114,7 @@ public class TokenProvider {
         }catch (Exception e) {
             // 토큰 검증에 실패한 경우 또는 토큰이 만료된 경우 예외가 발생할 수 있습니다.
             // 검증에 실패하면 null을 반환하거나 예외를 처리하면 됩니다.
-            e.printStackTrace();
+            log.error("Database Error",e);
             return null;
         }
         //디코딩된 payload에서 제목을 가져옴
