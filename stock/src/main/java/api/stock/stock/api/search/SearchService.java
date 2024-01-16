@@ -8,18 +8,20 @@ import api.stock.stock.global.response.ResponseDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 public class SearchService {
     private final ModelMapper modelMapper;
     private final SearchRepository searchRepository;
     private final BoardService boardService;
     private final IpoService ipoService;
 
-    @Autowired
+
     public SearchService(ModelMapper modelMapper, SearchRepository searchRepository, BoardService boardService, IpoService ipoService) {
         this.modelMapper = modelMapper;
         this.searchRepository = searchRepository;

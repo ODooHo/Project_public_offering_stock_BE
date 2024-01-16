@@ -4,16 +4,17 @@ import api.stock.stock.global.response.ResponseDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 public class TradeService {
     private final TradeRepository tradeRepository;
     private final ModelMapper modelMapper;
 
-    @Autowired
     public TradeService(TradeRepository tradeRepository, ModelMapper modelMapper) {
         this.tradeRepository = tradeRepository;
         this.modelMapper = modelMapper;

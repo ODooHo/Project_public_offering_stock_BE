@@ -6,15 +6,17 @@ import api.stock.stock.global.response.ResponseDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@Transactional
 public class LikesService {
     private final LikesRepository likesRepository;
     private final BoardService boardService;
     private final ModelMapper modelMapper;
 
-    @Autowired
+
     public LikesService(LikesRepository likesRepository, BoardService boardService, ModelMapper modelMapper) {
         this.likesRepository = likesRepository;
         this.boardService = boardService;

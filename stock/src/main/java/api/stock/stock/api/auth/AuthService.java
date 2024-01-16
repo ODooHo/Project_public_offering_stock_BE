@@ -21,7 +21,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final TokenProvider tokenProvider;
     private final ModelMapper modelMapper;
-    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final RedisTemplate<String, String> redisTemplate;
 
     @Autowired

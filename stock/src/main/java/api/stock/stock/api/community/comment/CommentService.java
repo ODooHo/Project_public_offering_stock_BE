@@ -5,17 +5,19 @@ import api.stock.stock.global.response.ResponseDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 public class CommentService {
     private final CommentRepository commentRepository;
     private final ModelMapper modelMapper;
     private final BoardService boardService;
-    @Autowired
+
     public CommentService(CommentRepository commentRepository, ModelMapper modelMapper, BoardService boardService) {
 
         this.commentRepository = commentRepository;

@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Repository
 @Transactional
 public interface BoardRepository extends JpaRepository<BoardEntity, Integer>,BoardQueryDslRepository {
     List<BoardEntity> findByBoardTitleContains(String boardTitle);

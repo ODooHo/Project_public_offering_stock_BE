@@ -2,8 +2,6 @@ package api.stock.stock.api.community.board;
 
 import api.stock.stock.api.file.FileService;
 import api.stock.stock.global.response.ResponseDto;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,13 +13,13 @@ import java.util.List;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final ModelMapper modelMapper;
+
     private final FileService fileService;
 
-    @Autowired
-    public BoardService(BoardRepository boardRepository, ModelMapper modelMapper, FileService fileService) {
+
+    public BoardService(BoardRepository boardRepository, FileService fileService) {
         this.boardRepository = boardRepository;
-        this.modelMapper = modelMapper;
+
         this.fileService = fileService;
     }
 
