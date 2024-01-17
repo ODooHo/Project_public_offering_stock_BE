@@ -19,14 +19,12 @@ public class IpoController {
 
     @GetMapping("/list")
     ResponseDto<List<IpoEntity>>getIpoList(){
-        ResponseDto<List<IpoEntity>> result = ipoService.getIpoList();
-        return result;
+        return ipoService.getIpoList();
     }
 
     @GetMapping("/{ipoName}")
     ResponseDto<IpoEntity> getIpo(@PathVariable String ipoName){
-        ResponseDto<IpoEntity> result = ipoService.getIpo(ipoName);
-        return result;
+        return ipoService.getIpo(ipoName);
     }
 
 }

@@ -1,4 +1,6 @@
-package api.stock.stock.api.search;
+package api.stock.stock.api.search.querydsl;
+
+import api.stock.stock.api.search.SearchEntity;
 
 import java.util.List;
 

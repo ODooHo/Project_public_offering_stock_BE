@@ -9,9 +9,7 @@ import api.stock.stock.api.search.SearchService;
 import api.stock.stock.api.trade.TradeService;
 import api.stock.stock.api.user.UserService;
 import api.stock.stock.global.response.ResponseDto;
-import com.amazonaws.services.s3.AmazonS3;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service

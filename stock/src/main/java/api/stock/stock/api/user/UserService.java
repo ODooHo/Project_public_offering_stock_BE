@@ -48,14 +48,12 @@ public class UserService {
         return ResponseDto.setSuccess("Success",patchUserResponseDto);
     }
 
-    public ResponseDto<String> withDraw(String userEmail){
+    public void withDraw(String userEmail){
         try{
             userRepository.deleteById(userEmail);
         }catch (Exception e){
             log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error!");
         }
-        return ResponseDto.setSuccess("Success","WithDraw Completed");
     }
 
     public void setProfile(String userEmail, String profileName){

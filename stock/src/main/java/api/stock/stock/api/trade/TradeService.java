@@ -3,7 +3,6 @@ package api.stock.stock.api.trade;
 import api.stock.stock.global.response.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,6 +60,7 @@ public class TradeService {
         return ResponseDto.setSuccess("Success","Delete Completed");
     }
 
+    @Transactional(readOnly = true)
     public ResponseDto<List<TradeEntity>> getTradeList(String userEmail){
         List<TradeEntity> tradeList = new ArrayList<>();
 
@@ -75,14 +75,12 @@ public class TradeService {
     }
 
 
-    public ResponseDto<String> deleteByWithdraw(String userEmail){
+    public void deleteByWithdraw(String userEmail){
         try{
             tradeRepository.deleteAllByUserEmail(userEmail);
         }catch (Exception e){
             log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
         }
-        return ResponseDto.setSuccess("Success","Delete Completed");
     }
 
 

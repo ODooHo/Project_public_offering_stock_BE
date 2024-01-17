@@ -56,6 +56,7 @@ public class BoardService {
         return ResponseDto.setSuccess("Success",board);
     }
 
+    @Transactional(readOnly = true)
     public ResponseDto<BoardEntity> getBoard(Integer boardId) {
         BoardEntity board = new BoardEntity();
         try{
@@ -70,6 +71,7 @@ public class BoardService {
         return ResponseDto.setSuccess("Success",board);
     }
 
+    @Transactional(readOnly = true)
     public ResponseDto<List<BoardEntity>> getList() {
         List<BoardEntity> boardList = new ArrayList<>();
         try{
@@ -82,6 +84,7 @@ public class BoardService {
         return ResponseDto.setSuccess("Success", boardList);
     }
 
+    @Transactional(readOnly = true)
     public Integer getLikeCount(Integer boardId){
         BoardEntity board = null;
         Integer result = null;
@@ -130,12 +133,13 @@ public class BoardService {
         try{
             boardRepository.deleteById(boardId);
         }catch (Exception e){
+            log.error("DataBase Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
         return ResponseDto.setSuccess("Success","Delete Completed");
     }
 
-    public ResponseDto<String> deleteByWithdraw(String userEmail){
+    public void deleteByWithdraw(String userEmail){
         List<BoardEntity> boardList = boardRepository.findByBoardWriterEmail(userEmail);
 
         try{
@@ -145,11 +149,11 @@ public class BoardService {
                 deleteBoard(userEmail,boardId);
             }
         }catch (Exception e){
-            return ResponseDto.setFailed("DataBase Error");
+            log.error("DataBase Error",e);
         }
-        return ResponseDto.setSuccess("Success" , "Delete Completed");
     }
 
+    @Transactional(readOnly = true)
     public List<BoardEntity> searchBoard(String searchWord){
         List<BoardEntity> result = new ArrayList<>();
         try{

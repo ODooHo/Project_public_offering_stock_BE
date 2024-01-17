@@ -5,7 +5,6 @@ import api.stock.stock.api.community.board.BoardService;
 import api.stock.stock.global.response.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,6 +58,7 @@ public class LikesService {
 
 
 
+    @Transactional(readOnly = true)
     public ResponseDto<Integer> getLikesCount(Integer boardId){
         Integer count = 0;
         Integer check;
@@ -78,22 +78,21 @@ public class LikesService {
         return ResponseDto.setSuccess("Success",count);
     }
 
-    public ResponseDto<String> deleteByBoard(Integer boardId){
+    public void deleteByBoard(Integer boardId){
         try{
             likesRepository.deleteAllByBoardId(boardId);
         }catch (Exception e){
-            return ResponseDto.setFailed("DataBase Error");
+            log.error("DataBase Error",e);
         }
-        return ResponseDto.setSuccess("Success", "Delete Completed");
+
     }
 
-    public ResponseDto<String> deleteByWithdraw(String userEmail){
+    public void deleteByWithdraw(String userEmail){
         try{
             likesRepository.deleteAllByUserEmail(userEmail);
         }catch (Exception e){
-            return ResponseDto.setFailed("DataBase Error");
+            log.error("DataBase Error",e);
         }
-        return ResponseDto.setSuccess("Success", "Delete Completed");
     }
 
 

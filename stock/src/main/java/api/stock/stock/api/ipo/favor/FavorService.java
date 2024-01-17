@@ -7,11 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 @Slf4j
 public class FavorService {
 
@@ -27,6 +29,7 @@ public class FavorService {
     }
 
 
+    @Transactional(readOnly = true)
     public ResponseDto<List<IpoEntity>> getFavorList(String userEmail){
         List<IpoEntity> result = new ArrayList<>();
         List<String> ipoList = favorRepository.findIpoNameByUserEmail(userEmail);
@@ -75,13 +78,11 @@ public class FavorService {
     }
 
 
-    public ResponseDto<String> deleteByWithdraw(String userEmail){
+    public void deleteByWithdraw(String userEmail){
         try{
             favorRepository.deleteAllByUserEmail(userEmail);
         }catch (Exception e){
-            return ResponseDto.setFailed("DataBase Error");
+            log.error("Database Error",e);
         }
-        return ResponseDto.setSuccess("Success", "Delete Completed");
     }
-
 }

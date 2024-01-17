@@ -4,7 +4,6 @@ import api.stock.stock.api.community.board.BoardService;
 import api.stock.stock.global.response.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +26,7 @@ public class CommentService {
         this.boardService = boardService;
     }
 
+    @Transactional(readOnly = true)
     public ResponseDto<List<CommentEntity>> getComment(Integer boardId) {
         List<CommentEntity> commentList = new ArrayList<>();
         try{
@@ -98,19 +98,19 @@ public class CommentService {
         try{
             commentRepository.deleteAllByBoardId(boardId);
         }catch (Exception e){
+            log.error("DataBase Error",e);
             return ResponseDto.setFailed("DataBase Error");
         }
 
         return ResponseDto.setSuccess("Success","Delete Completed");
 
     }
-    public ResponseDto<String> deleteByWithdraw(String userEmail){
+    public void deleteByWithdraw(String userEmail){
         try{
             commentRepository.deleteAllByCommentWriterEmail(userEmail);
         }catch (Exception e){
-            return ResponseDto.setFailed("DataBase Error");
+            log.error("DataBase Error",e);
         }
-        return ResponseDto.setSuccess("Success","Delete Completed");
 
     }
 

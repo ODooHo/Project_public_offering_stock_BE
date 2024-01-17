@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
@@ -45,6 +46,8 @@ public class FileService {
         this.amazonS3 = amazonS3;
     }
 
+
+    @Transactional
     public ResponseDto<String> uploadImage(MultipartFile boardImage, BoardEntity board) {
         try{
             if (boardImage != null){
@@ -65,6 +68,7 @@ public class FileService {
         return ResponseDto.setSuccess("Success", "OK");
     }
 
+    @Transactional
     public ResponseDto<String> setProfile(MultipartFile file, String userEmail) {
         UserEntity user = userRepository.findById(userEmail).orElse(null);
 
@@ -101,17 +105,15 @@ public class FileService {
         return getImage(imageName,"img/");
     }
 
-    public ResponseDto<String> deleteBoardImage(Integer boardId){
+    public void deleteBoardImage(Integer boardId){
         String imageName = boardId + ".jpg";
         String path = uploadDir + "img/" + imageName;
         try{
             amazonS3.deleteObject(bucketName,path);
         }catch (AmazonS3Exception e){
             log.error("Database Error",e);
-            return ResponseDto.setFailed("S3 Error");
-        }
-        return ResponseDto.setSuccess("Success","Delete Completed");
 
+        }
     }
 
     public ResponseDto<String> deleteProfileImage(String userEmail){

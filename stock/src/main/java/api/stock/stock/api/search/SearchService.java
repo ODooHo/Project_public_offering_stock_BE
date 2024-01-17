@@ -7,7 +7,6 @@ import api.stock.stock.api.ipo.IpoService;
 import api.stock.stock.global.response.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +30,7 @@ public class SearchService {
         this.ipoService = ipoService;
     }
 
+    @Transactional(readOnly = true)
     public ResponseDto<List<SearchEntity>>getRecentBoard(String userEmail){
         List<SearchEntity> search = new ArrayList<>();
         try{
@@ -43,6 +43,7 @@ public class SearchService {
         return ResponseDto.setSuccess("Success",search);
     }
 
+    @Transactional(readOnly = true)
     public ResponseDto<List<SearchEntity>>getRecentIpo(String userEmail){
         List<SearchEntity> search = new ArrayList<>();
         try{
@@ -54,6 +55,7 @@ public class SearchService {
 
         return ResponseDto.setSuccess("Success",search);
     }
+
 
 
     public ResponseDto<List<BoardEntity>> searchBoard(SearchDto dto){
@@ -109,14 +111,12 @@ public class SearchService {
     }
 
 
-    public ResponseDto<String> deleteByWithdraw(String userEmail){
+    public void deleteByWithdraw(String userEmail){
         try{
             searchRepository.deleteAllByUserEmail(userEmail);
         }catch (Exception e){
             log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
         }
-        return ResponseDto.setSuccess("Success","Delete Completed");
     }
 
 
