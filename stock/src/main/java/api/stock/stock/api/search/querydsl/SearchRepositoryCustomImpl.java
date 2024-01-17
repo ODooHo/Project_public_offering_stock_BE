@@ -6,14 +6,14 @@ import jakarta.persistence.PersistenceContext;
 
 import java.util.List;
 
-public class SearchQueryDslRepositoryImpl implements SearchQueryDslRepository{
+public class SearchRepositoryCustomImpl implements SearchRepositoryCustom {
     @PersistenceContext
     EntityManager em;
 
     private final JPAQueryFactory queryFactory;
     private final QSearchEntity qSearchEntity = QSearchEntity.searchEntity;
 
-    public SearchQueryDslRepositoryImpl(EntityManager em) {
+    public SearchRepositoryCustomImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
     }
 

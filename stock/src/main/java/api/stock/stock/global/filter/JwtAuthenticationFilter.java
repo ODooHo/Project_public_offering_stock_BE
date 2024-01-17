@@ -6,6 +6,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -29,23 +30,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
     private final TokenProvider tokenProvider;
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
 
     public JwtAuthenticationFilter(TokenProvider tokenProvider, RedisTemplate redisTemplate) {
         this.tokenProvider = tokenProvider;
         this.redisTemplate = redisTemplate;
     }
 
+    public static JwtAuthenticationFilter of(TokenProvider tokenProvider, RedisTemplate redisTemplate){
+        return new JwtAuthenticationFilter(tokenProvider,redisTemplate);
+    }
+
+
+
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,@NonNull FilterChain filterChain)
             throws ServletException, IOException {
         String token = parseBearerToken(request);
         SetOperations<String,String> setOperations = redisTemplate.opsForSet();
         boolean isLogout = false;
 
         if (token != null && !token.equalsIgnoreCase("null")) {
-            isLogout = setOperations.isMember("Blacklist", token);
+            isLogout = Boolean.TRUE.equals(setOperations.isMember("Blacklist", token));
         }
 
         try {
