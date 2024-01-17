@@ -21,45 +21,38 @@ public class AuthController {
 
     @PostMapping("/signUp")
     public ResponseDto<UserEntity> signUp(@RequestBody SignUpDto requestBody){
-        ResponseDto<UserEntity> result = authService.signUp(requestBody);
-        return result;
+        return authService.signUp(requestBody);
     }
 
     @PostMapping("/signUp/emailCheck/{userEmail}")
     public ResponseDto<String> emailCheck(@PathVariable String userEmail){
-        ResponseDto<String> result = authService.emailCheck(userEmail);
-        return result;
+        return authService.emailCheck(userEmail);
     }
 
     @PostMapping("/signUp/nicknameCheck/{userNickname}")
     public ResponseDto<String> nicknameCheck(@PathVariable String userNickname){
-        ResponseDto<String> result = authService.nicknameCheck(userNickname);
-        return result;
+        return authService.nicknameCheck(userNickname);
     }
 
 
     @PostMapping("/signIn")
     public ResponseDto<SignInResponseDto> signIn(@RequestBody SignInDto requestBody){
-        ResponseDto<SignInResponseDto> result = authService.signIn(requestBody);
-        return result;
+        return authService.signIn(requestBody);
     }
 
     @PostMapping("/logout")
     public ResponseDto<String> logout(@RequestHeader String token){
-        ResponseDto<String> result = authService.logout(token);
-        return result;
+        return authService.logout(token);
     }
 
     @PostMapping("/getAccess")
     public ResponseDto<RefreshResponseDto> getAccess(@RequestHeader String refreshToken){
-        ResponseDto<RefreshResponseDto> result = authService.getAccess(refreshToken);
-        return result;
+        return authService.getAccess(refreshToken);
     }
 
     @DeleteMapping("/withDraw")
     public ResponseDto<String> withDraw(@AuthenticationPrincipal String userEmail){
-        ResponseDto<String> result = deleteApplication.widthDraw(userEmail);
-        return result;
+        return deleteApplication.widthDraw(userEmail);
     }
 
 }

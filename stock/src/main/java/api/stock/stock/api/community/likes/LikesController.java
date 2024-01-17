@@ -17,21 +17,18 @@ public class LikesController {
 
     @PostMapping("/{boardId}/likes/add")
     ResponseDto<LikesEntity> addLike(@RequestBody LikesDto requestBody){
-        ResponseDto<LikesEntity> result = likesService.addLike(requestBody);
-        return result;
+        return likesService.addLike(requestBody);
     }
 
     @DeleteMapping("/{boardId}/likes/delete")
     ResponseDto<String> deleteLike(@PathVariable Integer boardId, @AuthenticationPrincipal String userEmail){
-        ResponseDto<String> result = likesService.deleteLike(boardId, userEmail);
-        return result;
+        return likesService.deleteLike(boardId, userEmail);
     }
 
 
     @GetMapping("/{boardId}/likes/get/count")
     ResponseDto<Integer> getLikesCount(@PathVariable Integer boardId){
-        ResponseDto<Integer> result = likesService.getLikesCount(boardId);
-        return result;
+        return likesService.getLikesCount(boardId);
     }
 
 }

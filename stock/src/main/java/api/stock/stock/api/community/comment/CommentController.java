@@ -19,26 +19,22 @@ public class CommentController {
 
     @GetMapping("/{boardId}/comment")
     ResponseDto<List<CommentEntity>> getComment(@PathVariable Integer boardId){
-        ResponseDto<List<CommentEntity>> result = commentService.getComment(boardId);
-        return result;
+        return commentService.getComment(boardId);
     }
 
     @PostMapping("/{boardId}/writeComment")
     ResponseDto<CommentEntity> writeComment(@PathVariable Integer boardId, @RequestBody CommentDto requestBody){
-        ResponseDto<CommentEntity> result = commentService.writeComment(boardId,requestBody);
-        return result;
+        return commentService.writeComment(boardId,requestBody);
     }
 
     @PatchMapping("/{boardId}/edit/{commentId}")
     ResponseDto<PatchCommentResponseDto> patchComment(@AuthenticationPrincipal String userEmail,@PathVariable Integer commentId, @RequestBody PatchCommentDto requestBody){
-        ResponseDto<PatchCommentResponseDto> result = commentService.patchComment(userEmail,commentId, requestBody);
-        return result;
+        return commentService.patchComment(userEmail,commentId, requestBody);
     }
 
     @DeleteMapping("/{boardId}/delete/{commentId}")
     ResponseDto<String> deleteComment(@AuthenticationPrincipal String userEmail, @PathVariable Integer commentId){
-        ResponseDto<String> result = commentService.deleteComment(userEmail, commentId);
-        return result;
+        return commentService.deleteComment(userEmail, commentId);
     }
 
 

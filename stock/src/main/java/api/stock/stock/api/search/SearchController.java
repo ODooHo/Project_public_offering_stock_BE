@@ -19,32 +19,27 @@ public class SearchController {
 
     @GetMapping("/community")
     public ResponseDto<List<SearchEntity>>getRecentBoard(@AuthenticationPrincipal String userEmail){
-        ResponseDto<List<SearchEntity>> result = searchService.getRecentBoard(userEmail);
-        return result;
+        return searchService.getRecentBoard(userEmail);
     }
 
     @GetMapping("/stock")
     public ResponseDto<List<SearchEntity>>getRecentIpo(@AuthenticationPrincipal String userEmail){
-        ResponseDto<List<SearchEntity>> result = searchService.getRecentIpo(userEmail);
-        return result;
+        return searchService.getRecentIpo(userEmail);
     }
 
     @PostMapping("/stock")
     public ResponseDto<List<IpoEntity>>searchIpo(@RequestBody SearchDto requestBody){
-        ResponseDto<List<IpoEntity>> result = searchService.searchIpo(requestBody);
-        return result;
+        return searchService.searchIpo(requestBody);
     }
 
     @PostMapping("/community")
     public ResponseDto<List<BoardEntity>>searchBoard(@RequestBody SearchDto requestBody){
-        ResponseDto<List<BoardEntity>> result = searchService.searchBoard(requestBody);
-        return result;
+        return searchService.searchBoard(requestBody);
     }
 
     @DeleteMapping("/{searchId}/delete")
     public ResponseDto<String>deleteSearchWord(@PathVariable Integer searchId){
-        ResponseDto<String> result = searchService.deleteSearchWord(searchId);
-        return result;
+        return searchService.deleteSearchWord(searchId);
     }
 
 

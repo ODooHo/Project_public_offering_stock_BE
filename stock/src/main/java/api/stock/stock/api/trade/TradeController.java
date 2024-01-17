@@ -20,20 +20,17 @@ public class TradeController {
 
     @PostMapping("/createTrade")
     ResponseDto<TradeEntity> createTrade(@RequestBody TradeDto requestBody){
-        ResponseDto<TradeEntity> result = tradeService.createTrade(requestBody);
-        return result;
+        return tradeService.createTrade(requestBody);
     }
 
     @GetMapping("/getTrade")
     ResponseDto<List<TradeEntity>> getTrade(@AuthenticationPrincipal String userEmail){
-        ResponseDto<List<TradeEntity>> result = tradeService.getTradeList(userEmail);
-        return result;
+        return tradeService.getTradeList(userEmail);
     }
 
     @DeleteMapping("/deleteTrade/{tradeId}")
     ResponseDto<String>deleteTrade(@AuthenticationPrincipal String userEmail, @PathVariable Integer tradeId){
-        ResponseDto<String> result = tradeService.deleteTrade(userEmail, tradeId);
-        return result;
+        return tradeService.deleteTrade(userEmail, tradeId);
     }
 
 

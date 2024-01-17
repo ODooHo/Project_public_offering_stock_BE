@@ -35,40 +35,34 @@ public class BoardController {
             @RequestParam("boardWriterProfile") String boardWriterProfile,
             @RequestParam("boardWriterNickname") String boardWriterNickname,
             @RequestParam(value = "boardImage", required = false) MultipartFile boardImage){
-        ResponseDto<BoardEntity> result = boardService.register(boardTitle, boardContent,boardWriterEmail,boardWriterProfile,boardWriterNickname,
+        return boardService.register(boardTitle, boardContent,boardWriterEmail,boardWriterProfile,boardWriterNickname,
                 boardImage);
-        return result;
     }
 
     @GetMapping("/list")
     public ResponseDto<List<BoardEntity>> getList(){
-        ResponseDto<List<BoardEntity>> result = boardService.getList();
-        return result;
+        return boardService.getList();
     }
 
     @GetMapping("/{boardId}")
     public ResponseDto<BoardEntity> getBoard(@PathVariable Integer boardId){
-        ResponseDto<BoardEntity> result = boardService.getBoard(boardId);
-        return result;
+        return boardService.getBoard(boardId);
     }
 
     @GetMapping("/{boardId}/image")
     public ResponseEntity<byte[]> getBoardImage(@PathVariable Integer boardId) throws IOException {
-        ResponseEntity<byte[]> result = fileService.getBoardImage(boardId);
-        return result;
+        return fileService.getBoardImage(boardId);
     }
 
 
     @DeleteMapping("/delete/{boardId}")
     public ResponseDto<String> deleteBoard(@AuthenticationPrincipal String userEmail, @PathVariable Integer boardId){
-        ResponseDto<String> result = deleteApplication.deleteBoard(userEmail,boardId);
-        return result;
+        return deleteApplication.deleteBoard(userEmail,boardId);
     }
 
     @PatchMapping("/edit/{boardId}")
     public ResponseDto<PatchBoardResponseDto> patchBoard(@AuthenticationPrincipal String userEmail, @PathVariable Integer boardId, @RequestBody PatchBoardDto requestBody){
-            ResponseDto<PatchBoardResponseDto> result = boardService.patchBoard(userEmail, boardId, requestBody);
-            return result;
+        return boardService.patchBoard(userEmail, boardId, requestBody);
     }
 
 //    @GetMapping("/{boardId}")

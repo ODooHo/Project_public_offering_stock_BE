@@ -27,8 +27,7 @@ public class UserController {
 
     @GetMapping("/profile")
     public ResponseEntity<byte[]> getProfile(@AuthenticationPrincipal String userEmail) throws IOException {
-        ResponseEntity<byte[]> result = fileService.getProfileImage(userEmail);
-        return result;
+        return fileService.getProfileImage(userEmail);
     }
 
 
@@ -37,14 +36,12 @@ public class UserController {
             @RequestParam(value = "userNickname", required = false) String userNickname,
             @RequestParam(value = "userProfile",required = false) MultipartFile userProfile,
             @AuthenticationPrincipal String userEmail){
-        ResponseDto<PatchUserResponseDto> result = userService.patchUser(userNickname,userProfile,userEmail);
-        return result;
+        return userService.patchUser(userNickname,userProfile,userEmail);
     }
 
     @DeleteMapping("/profile/delete")
     public ResponseDto<String> deleteProfile(@AuthenticationPrincipal String userEmail){
-        ResponseDto<String> result = fileService.deleteProfileImage(userEmail);
-        return result;
+        return fileService.deleteProfileImage(userEmail);
     }
 
 
