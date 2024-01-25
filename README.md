@@ -214,6 +214,9 @@
 
 ### 2023-12-01
 - DeleteApplication 제안 및 개발
+
+### 2024-01-25
+- 추가 리팩토링을 위한 코드리뷰 진행중
 </details>
 
 <!-- Stack Icon Refernces -->
