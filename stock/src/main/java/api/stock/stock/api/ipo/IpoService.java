@@ -26,8 +26,7 @@ public class IpoService {
         try{
             result = ipoRepository.findByIpoName(ipoName);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
         }
     return ResponseDto.setSuccess("Success", result);
     }
@@ -39,8 +38,7 @@ public class IpoService {
         try{
             result = ipoRepository.findByOrderByDateDesc();
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
         }
         return ResponseDto.setSuccess("Success",result);
     }
@@ -50,8 +48,7 @@ public class IpoService {
         try{
             result = ipoRepository.findAllByIpoNameIn(ipoList);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return null;
+            throw new RuntimeException(e);
         }
         return result;
     }
@@ -61,8 +58,7 @@ public class IpoService {
         try{
             result = ipoRepository.findByIpoNameContains(searchWord);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return null;
+            throw new RuntimeException(e);
         }
         return result;
     }

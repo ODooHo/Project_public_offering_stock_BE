@@ -28,8 +28,7 @@ public class TradeService {
                 return ResponseDto.setFailed("Trade already Exist!");
             }
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
         }
 
         TradeEntity trade = modelMapper.map(dto,TradeEntity.class);
@@ -37,8 +36,7 @@ public class TradeService {
         try{
             tradeRepository.save(trade);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
         }
         return ResponseDto.setSuccess("Success",trade);
     }
@@ -54,8 +52,7 @@ public class TradeService {
         try{
             tradeRepository.deleteById(tradeId);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
         }
         return ResponseDto.setSuccess("Success","Delete Completed");
     }
@@ -67,8 +64,7 @@ public class TradeService {
         try{
             tradeList = tradeRepository.findByUserEmail(userEmail);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
         }
 
         return ResponseDto.setSuccess("Success",tradeList);
@@ -79,7 +75,7 @@ public class TradeService {
         try{
             tradeRepository.deleteAllByUserEmail(userEmail);
         }catch (Exception e){
-            log.error("Database Error",e);
+            throw new RuntimeException(e);
         }
     }
 

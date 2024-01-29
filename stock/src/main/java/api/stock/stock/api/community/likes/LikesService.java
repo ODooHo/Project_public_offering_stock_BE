@@ -35,8 +35,8 @@ public class LikesService {
             boardService.increaseLike(boardId);
             likesRepository.save(like);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
+             
         }
 
         return ResponseDto.setSuccess("Success",like);
@@ -49,8 +49,7 @@ public class LikesService {
             // 해당 게시글의 좋아요 개수 감소
             boardService.decreaseLike(boardId);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
         }
 
         return ResponseDto.setSuccess("Success","Delete Completed");
@@ -71,8 +70,7 @@ public class LikesService {
             }
 
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
         }
 
         return ResponseDto.setSuccess("Success",count);
@@ -82,7 +80,7 @@ public class LikesService {
         try{
             likesRepository.deleteAllByBoardId(boardId);
         }catch (Exception e){
-            log.error("DataBase Error",e);
+            throw new RuntimeException(e);
         }
 
     }
@@ -91,7 +89,7 @@ public class LikesService {
         try{
             likesRepository.deleteAllByUserEmail(userEmail);
         }catch (Exception e){
-            log.error("DataBase Error",e);
+            throw new RuntimeException(e);
         }
     }
 

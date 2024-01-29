@@ -36,8 +36,7 @@ public class FavorService {
         try{
             result = ipoService.findIpoByName(ipoList);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
         }
         return ResponseDto.setSuccess("Success",result);
     }
@@ -53,8 +52,7 @@ public class FavorService {
             }
             favorRepository.save(favor);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
         }
         return ResponseDto.setSuccess("Success",favor);
     }
@@ -71,8 +69,7 @@ public class FavorService {
         try{
             favorRepository.deleteByIpoName(ipoName);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
         }
         return ResponseDto.setSuccess("Success","Delete Completed");
     }
@@ -82,7 +79,7 @@ public class FavorService {
         try{
             favorRepository.deleteAllByUserEmail(userEmail);
         }catch (Exception e){
-            log.error("Database Error",e);
+            throw new RuntimeException(e);
         }
     }
 }

@@ -36,8 +36,7 @@ public class SearchService {
         try{
             search = searchRepository.findRecent(userEmail,"board");
         }catch (Exception e){
-            log.error("Database Error",e);
-            ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
         }
 
         return ResponseDto.setSuccess("Success",search);
@@ -49,8 +48,7 @@ public class SearchService {
         try{
             search = searchRepository.findRecent(userEmail,"ipo");
         }catch (Exception e){
-            log.error("Database Error",e);
-            ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
         }
 
         return ResponseDto.setSuccess("Success",search);
@@ -71,8 +69,7 @@ public class SearchService {
                 searchRepository.save(search);
             }
         }catch (Exception e){
-            log.error("Database Error",e);
-            ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
         }
 
 
@@ -92,8 +89,7 @@ public class SearchService {
                 searchRepository.save(search);
             }
         }catch (Exception e){
-                log.error("Database Error",e);
-                ResponseDto.setFailed("DataBase Error");
+                throw new RuntimeException(e);
         }
         return ResponseDto.setSuccess("Success",ipo);
 
@@ -103,8 +99,7 @@ public class SearchService {
         try{
             searchRepository.deleteById(searchId);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
         }
 
         return ResponseDto.setSuccess("Success","Delete Completed");
@@ -115,7 +110,7 @@ public class SearchService {
         try{
             searchRepository.deleteAllByUserEmail(userEmail);
         }catch (Exception e){
-            log.error("Database Error",e);
+            throw new RuntimeException(e);
         }
     }
 

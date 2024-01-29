@@ -47,7 +47,7 @@ public class DeleteApplication {
             likesService.deleteByBoard(boardId);
             boardService.deleteBoard(userEmail,boardId);
         }catch (Exception e){
-            return ResponseDto.setFailed("Database Error");
+             
         }
         return ResponseDto.setSuccess("delete Completed","");
     }
@@ -62,8 +62,8 @@ public class DeleteApplication {
             searchService.deleteByWithdraw(userEmail);
             userService.withDraw(userEmail);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
+             
         }
 
         return ResponseDto.setSuccess("Success", "Delete Completed");

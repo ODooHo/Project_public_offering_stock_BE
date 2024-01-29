@@ -98,7 +98,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 response.addHeader("data","Blacklist");
             }
             else{
-                log.error("Database Error",e);
+                throw new RuntimeException(e);
             }
         }
 

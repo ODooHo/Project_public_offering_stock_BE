@@ -48,8 +48,8 @@ public class AuthService {
                 return ResponseDto.setFailed("Nickname already exist!");
             }
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error!");
+            throw new RuntimeException(e);
+             
         }
 
         UserEntity userEntity = modelMapper.map(dto,UserEntity.class);
@@ -59,8 +59,8 @@ public class AuthService {
         try {
             userRepository.save(userEntity);
         } catch (Exception e) {
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error!");
+            throw new RuntimeException(e);
+             
         }
         return ResponseDto.setSuccess("Success",userEntity);
     }
@@ -71,8 +71,8 @@ public class AuthService {
                 return ResponseDto.setFailed("Email already exist!");
             }
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error!");
+            throw new RuntimeException(e);
+             
         }
         return ResponseDto.setSuccess("Success", "available Email");
     }
@@ -83,8 +83,8 @@ public class AuthService {
                 return ResponseDto.setFailed("Nickname already exist!");
             }
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error!");
+            throw new RuntimeException(e);
+             
         }
         return ResponseDto.setSuccess("Success", "available Nickname");
     }
@@ -106,8 +106,8 @@ public class AuthService {
                 return ResponseDto.setFailed("Different Password!");
             }
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error!");
+            throw new RuntimeException(e);
+             
         }
         userEntity.setUserPassword("");
 
@@ -128,8 +128,7 @@ public class AuthService {
             redisTemplate.opsForValue().set(token,"logout",expiration, TimeUnit.MILLISECONDS);
             redisTemplate.opsForSet().add("Blacklist",token);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error (Auth)");
+            throw new RuntimeException(e);
         }
 
         return ResponseDto.setSuccess("Success","Logout Completed");
@@ -146,8 +145,7 @@ public class AuthService {
 
             return ResponseDto.setSuccess("Success", refreshResponseDto);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error!");
+            throw new RuntimeException(e);
         }
     }
 

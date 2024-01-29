@@ -38,8 +38,8 @@ public class UserService {
 
 
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error!");
+            throw new RuntimeException(e);
+             
         }
 
         userEntity.setUserPassword("");
@@ -52,7 +52,7 @@ public class UserService {
         try{
             userRepository.deleteById(userEmail);
         }catch (Exception e){
-            log.error("Database Error",e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -63,7 +63,7 @@ public class UserService {
             user.setUserProfile(profileName);
             userRepository.save(user);
         }catch (Exception e){
-            log.error("Database Error",e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -74,7 +74,7 @@ public class UserService {
             user.setUserProfile("default.jpg");
             userRepository.save(user);
         }catch (Exception e){
-            log.error("Database Error",e);
+            throw new RuntimeException(e);
         }
     }
 

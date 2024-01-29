@@ -1,17 +1,16 @@
 package api.stock.stock.global.security;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.types.RedisClientInfo;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 //jwt : 전자 서명이 된 토큰
@@ -34,14 +33,14 @@ public class TokenProvider {
     }
 
     //jwt 생성하는 메서드
-    public String createAccessToken(String userEmail){
+    public String createAccessToken(String userEmail) {
 //        Date exprTime = Date.from(Instant.now().plus(5, ChronoUnit.SECONDS));
         Date exprTime = Date.from(Instant.now().plus(30, ChronoUnit.MINUTES));
 
         //jwt 생성
         return Jwts.builder()
                 //암호화에 사용되는 알고리즘, 키
-                .signWith(SignatureAlgorithm.HS512,SECURITY_KEY)
+                .signWith(SignatureAlgorithm.HS512, SECURITY_KEY)
                 //jwt 제목, 생성일, 만료일 설정
                 .setSubject(userEmail)
                 .setIssuedAt(new Date())
@@ -50,28 +49,23 @@ public class TokenProvider {
     }
 
     public String createAccessTokenFromRefreshToken(String refreshToken) {
-        try {
-            // Refresh Token의 유효성을 검증
-            Claims claims = Jwts.parser().setSigningKey(SECURITY_KEY).parseClaimsJws(refreshToken).getBody();
-            String userEmail = claims.getSubject();
+        // Refresh Token의 유효성을 검증
+        Claims claims = Jwts.parser().setSigningKey(SECURITY_KEY).parseClaimsJws(refreshToken).getBody();
+        String userEmail = claims.getSubject();
 
 
-            String storedRefreshToken = redisTemplate.opsForValue().get(userEmail);
+        String storedRefreshToken = redisTemplate.opsForValue().get(userEmail);
 
 
-            if (refreshToken.equals(storedRefreshToken)) {
-                return createAccessToken(userEmail);
-            } else {
-                return "Not Authenticated User!";
-            }
-        } catch (Exception e) {
-            log.error("Database Error",e);
-            return null;
+        if (refreshToken.equals(storedRefreshToken)) {
+            return createAccessToken(userEmail);
+        } else {
+            return "Not Authenticated User!";
         }
     }
 
     public String createRefreshToken(String userEmail) {
-        Date exprTime = Date.from(Instant.now().plus(7,ChronoUnit.DAYS));
+        Date exprTime = Date.from(Instant.now().plus(7, ChronoUnit.DAYS));
 
         long refreshExprTime = 604800000L;
 
@@ -94,28 +88,22 @@ public class TokenProvider {
 
     public Long getExpiration(String accessToken) {
         // accessToken 남은 유효시간
-        try{
-            Date expiration = Jwts.parser().setSigningKey(SECURITY_KEY).parseClaimsJws(accessToken).getBody().getExpiration();
-            // 현재 시간
-            Long now = new Date().getTime();
-            return (expiration.getTime() - now);
-        }catch (Exception e){
-            log.error("Database Error",e);
-            return null;
-        }
+        Date expiration = Jwts.parser().setSigningKey(SECURITY_KEY).parseClaimsJws(accessToken).getBody().getExpiration();
+        // 현재 시간
+        Long now = new Date().getTime();
+        return (expiration.getTime() - now);
     }
 
     //jwt 검증
-    public String validate(String token){
+    public String validate(String token) {
         Claims claims = null;
         try {
             //token을 키를 사용해서 디코딩
             claims = Jwts.parser().setSigningKey(SECURITY_KEY).parseClaimsJws(token).getBody();
-        }catch (Exception e) {
+        } catch (Exception e) {
             // 토큰 검증에 실패한 경우 또는 토큰이 만료된 경우 예외가 발생할 수 있습니다.
             // 검증에 실패하면 null을 반환하거나 예외를 처리하면 됩니다.
-            log.error("Database Error",e);
-            return null;
+            throw new RuntimeException(e);
         }
         //디코딩된 payload에서 제목을 가져옴
         return claims.getSubject();

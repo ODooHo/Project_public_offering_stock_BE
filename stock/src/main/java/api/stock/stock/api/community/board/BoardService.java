@@ -50,8 +50,8 @@ public class BoardService {
             fileService.uploadImage(boardImage,board);
             boardRepository.save(board);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
+             
         }
         return ResponseDto.setSuccess("Success",board);
     }
@@ -65,8 +65,8 @@ public class BoardService {
             board.setBoardClickCount(current + 1);
             boardRepository.save(board);
         }catch (Exception e) {
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
+             
         }
         return ResponseDto.setSuccess("Success",board);
     }
@@ -78,7 +78,7 @@ public class BoardService {
             boardList = boardRepository.findList();
         }catch (Exception e){
 
-            return ResponseDto.setFailed("DataBase Error");
+             
         }
 
         return ResponseDto.setSuccess("Success", boardList);
@@ -92,8 +92,7 @@ public class BoardService {
             board = boardRepository.findById(boardId).orElse(null);
             result = board.getBoardLikeCount();
         }catch (Exception e){
-            log.error("Database Error",e);
-            return null;
+            throw new RuntimeException(e);
         }
         return result;
     }
@@ -115,8 +114,8 @@ public class BoardService {
             board.setBoardWriteDate(date);
             boardRepository.save(board);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
+             
         }
         PatchBoardResponseDto response = new PatchBoardResponseDto(board);
 
@@ -133,8 +132,8 @@ public class BoardService {
         try{
             boardRepository.deleteById(boardId);
         }catch (Exception e){
-            log.error("DataBase Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
+             
         }
         return ResponseDto.setSuccess("Success","Delete Completed");
     }
@@ -149,7 +148,7 @@ public class BoardService {
                 deleteBoard(userEmail,boardId);
             }
         }catch (Exception e){
-            log.error("DataBase Error",e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -159,8 +158,7 @@ public class BoardService {
         try{
             result = boardRepository.findByBoardTitleContains(searchWord);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return null;
+            throw new RuntimeException(e);
         }
         return result;
     }
@@ -173,7 +171,7 @@ public class BoardService {
             board.setBoardCommentCount(count);
             boardRepository.save(board);
         }catch (Exception e){
-            log.error("Database Error",e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -185,7 +183,7 @@ public class BoardService {
                 boardRepository.save(board);
             }
         }catch (Exception e){
-            log.error("Database Error",e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -197,7 +195,7 @@ public class BoardService {
             board.setBoardLikeCount(count);
             boardRepository.save(board);
         }catch (Exception e){
-            log.error("Database Error",e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -209,7 +207,7 @@ public class BoardService {
             board.setBoardLikeCount(count);
             boardRepository.save(board);
         }catch (Exception e){
-            log.error("Database Error",e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -221,7 +219,7 @@ public class BoardService {
             board.setBoardLikeCount(count);
             boardRepository.save(board);
         }catch (Exception e){
-            log.error("Database Error",e);
+            throw new RuntimeException(e);
         }
     }
     public void setImageName(Integer boardId, String imageName) {
@@ -231,7 +229,7 @@ public class BoardService {
             board.setBoardImage(imageName);
             boardRepository.save(board);
         }catch (Exception e){
-            log.error("Database Error",e);
+            throw new RuntimeException(e);
         }
     }
 

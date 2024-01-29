@@ -32,8 +32,8 @@ public class CommentService {
         try{
             commentList = commentRepository.findByBoardId(boardId);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
+             
         }
 
         return ResponseDto.setSuccess("Success", commentList);
@@ -46,8 +46,8 @@ public class CommentService {
             boardService.increaseComment(boardId);
             commentRepository.save(comment);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
+             
         }
         return ResponseDto.setSuccess("Success", comment);
     }
@@ -67,8 +67,8 @@ public class CommentService {
             comment.setCommentWriteDate(date);
             commentRepository.save(comment);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
+             
         }
 
         PatchCommentResponseDto response = new PatchCommentResponseDto(comment);
@@ -87,8 +87,8 @@ public class CommentService {
         try{
             commentRepository.deleteById(commentId);
         }catch (Exception e){
-            log.error("Database Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
+             
         }
 
         return ResponseDto.setSuccess("Success","Delete Completed");
@@ -98,8 +98,8 @@ public class CommentService {
         try{
             commentRepository.deleteAllByBoardId(boardId);
         }catch (Exception e){
-            log.error("DataBase Error",e);
-            return ResponseDto.setFailed("DataBase Error");
+            throw new RuntimeException(e);
+             
         }
 
         return ResponseDto.setSuccess("Success","Delete Completed");
@@ -109,7 +109,7 @@ public class CommentService {
         try{
             commentRepository.deleteAllByCommentWriterEmail(userEmail);
         }catch (Exception e){
-            log.error("DataBase Error",e);
+            throw new RuntimeException(e);
         }
 
     }
