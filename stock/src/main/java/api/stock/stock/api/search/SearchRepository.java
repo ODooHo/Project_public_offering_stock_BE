@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 
-@Transactional
 public interface SearchRepository extends JpaRepository<SearchEntity,Integer>, SearchRepositoryCustom {
     boolean existsByUserEmailAndSearchContent(String userEmail, String searchContent);
     void deleteAllByUserEmail(String userEmail);

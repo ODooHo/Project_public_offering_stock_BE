@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 
-@Transactional
 public interface LikesRepository extends JpaRepository<LikesEntity, Integer> {
     Integer countByBoardId(Integer boardId);
     void deleteByBoardIdAndUserEmail(Integer boardId, String userEmail);
