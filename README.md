@@ -8,7 +8,6 @@
   <img src="./images/common/4.jpg">
   <img src="./images/common/5.jpg">
   <img src="./images/common/6.jpg">
-
   <br>
 </p>
 
