@@ -213,7 +213,6 @@
 
 ### 2023-12-01
 - DeleteApplication 제안 및 개발
-
 </details>
 
 <!-- Stack Icon Refernces -->
