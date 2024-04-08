@@ -1,5 +1,7 @@
 package api.stock.stock.api.auth;
 
+import api.stock.stock.api.exception.ErrorCode;
+import api.stock.stock.api.exception.IPOApplicationException;
 import api.stock.stock.api.user.UserEntity;
 import api.stock.stock.global.response.ResponseDto;
 import api.stock.stock.global.security.TokenProvider;
@@ -34,81 +36,42 @@ public class AuthService {
         this.redisTemplate = redisTemplate;
     }
 
-    public ResponseDto<UserEntity> signUp(SignUpDto dto){
-        String userEmail = dto.getUserEmail();
-        String userPassword = dto.getUserPassword();
-        String userNickname = dto.getUserNickname();
+    public ResponseDto<UserEntity> signUp(SignUpDto dto) {
+        UserEntity userEntity = modelMapper.map(dto, UserEntity.class);
 
-        //이메일 중복 확인
-        try{
-            if (userRepository.existsById(userEmail)){
-                return ResponseDto.setFailed("Email already exist!");
-            }
-            if (userRepository.existsByUserNickname(userNickname)){
-                return ResponseDto.setFailed("Nickname already exist!");
-            }
-        }catch (Exception e){
-            throw new RuntimeException(e);
-             
-        }
-
-        UserEntity userEntity = modelMapper.map(dto,UserEntity.class);
-
-        String encodedPassword = passwordEncoder.encode(userPassword);
+        String encodedPassword = passwordEncoder.encode(dto.getUserPassword());
         userEntity.setUserPassword(encodedPassword);
-        try {
-            userRepository.save(userEntity);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-             
-        }
-        return ResponseDto.setSuccess("Success",userEntity);
+        userRepository.save(userEntity);
+        return ResponseDto.setSuccess("Success", userEntity);
     }
 
-    public ResponseDto<String> emailCheck(String userEmail){
-        try{
-            if (userRepository.existsById(userEmail)){
-                return ResponseDto.setFailed("Email already exist!");
-            }
-        }catch (Exception e){
-            throw new RuntimeException(e);
-             
+    public ResponseDto<String> emailCheck(String userEmail) {
+        if (userRepository.existsById(userEmail)) {
+            throw new IPOApplicationException(ErrorCode.DUPLICATED_USER_EMAIL);
         }
         return ResponseDto.setSuccess("Success", "available Email");
     }
 
-    public ResponseDto<String> nicknameCheck(String userNickname){
-        try{
-            if (userRepository.existsByUserNickname(userNickname)){
-                return ResponseDto.setFailed("Nickname already exist!");
-            }
-        }catch (Exception e){
-            throw new RuntimeException(e);
-             
+    public ResponseDto<String> nicknameCheck(String userNickname) {
+        if (userRepository.existsByUserNickname(userNickname)) {
+            throw new IPOApplicationException(ErrorCode.DUPLICATED_USER_NICKNAME);
         }
         return ResponseDto.setSuccess("Success", "available Nickname");
     }
 
 
     @Transactional(readOnly = true)
-    public ResponseDto<SignInResponseDto> signIn(SignInDto dto){
+    public ResponseDto<SignInResponseDto> signIn(SignInDto dto) {
         String userEmail = dto.getUserEmail();
         String userPassword = dto.getUserPassword();
 
-        UserEntity userEntity = null;
-
-        try{
-            userEntity = userRepository.findById(userEmail).orElse(null);
-            if(userEntity == null){
-                return ResponseDto.setFailed("Unknown User!");
-            }
-            if(!passwordEncoder.matches(userPassword,userEntity.getUserPassword())){
-                return ResponseDto.setFailed("Different Password!");
-            }
-        }catch (Exception e){
-            throw new RuntimeException(e);
-             
+        UserEntity userEntity = userRepository.findById(userEmail).orElseThrow(
+                () -> new IPOApplicationException(ErrorCode.USER_NOT_FOUND)
+        );
+        if (!passwordEncoder.matches(userPassword, userEntity.getUserPassword())) {
+            throw new IPOApplicationException(ErrorCode.INVALID_PASSWORD);
         }
+
         userEntity.setUserPassword("");
 
         String token = tokenProvider.createAccessToken(userEmail);
@@ -118,38 +81,28 @@ public class AuthService {
         Integer refreshExprTime = 604800000;
 
 
-        SignInResponseDto signInResponseDto = new SignInResponseDto(token,exprTime,refreshToken,refreshExprTime,userEntity);
-        return ResponseDto.setSuccess("Success",signInResponseDto);
+        SignInResponseDto signInResponseDto = new SignInResponseDto(token, exprTime, refreshToken, refreshExprTime, userEntity);
+        return ResponseDto.setSuccess("Success", signInResponseDto);
     }
 
-    public ResponseDto<String> logout(String token){
-        try{
-            Long expiration = tokenProvider.getExpiration(token);
-            redisTemplate.opsForValue().set(token,"logout",expiration, TimeUnit.MILLISECONDS);
-            redisTemplate.opsForSet().add("Blacklist",token);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
+    public ResponseDto<Void> logout(String token) {
+        Long expiration = tokenProvider.getExpiration(token);
+        redisTemplate.opsForValue().set(token, "logout", expiration, TimeUnit.MILLISECONDS);
+        redisTemplate.opsForSet().add("Blacklist", token);
 
-        return ResponseDto.setSuccess("Success","Logout Completed");
+        return ResponseDto.setSuccess();
 
     }
 
     public ResponseDto<RefreshResponseDto> getAccess(String refreshToken) {
-        try {
-            String accessToken = tokenProvider.createAccessTokenFromRefreshToken(refreshToken);
-            Integer exprTime = 1800000;
+        String accessToken = tokenProvider.createAccessTokenFromRefreshToken(refreshToken);
+        Integer exprTime = 1800000;
 //            Integer exprTime = 5000;
 
-            RefreshResponseDto refreshResponseDto = new RefreshResponseDto(accessToken, exprTime);
+        RefreshResponseDto refreshResponseDto = new RefreshResponseDto(accessToken, exprTime);
 
-            return ResponseDto.setSuccess("Success", refreshResponseDto);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
+        return ResponseDto.setSuccess("Success", refreshResponseDto);
     }
-
-
 
 
 }

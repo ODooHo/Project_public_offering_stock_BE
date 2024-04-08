@@ -1,7 +1,8 @@
 package api.stock.stock.api.community.likes;
 
-import api.stock.stock.api.community.board.BoardEntity;
 import api.stock.stock.api.community.board.BoardService;
+import api.stock.stock.api.exception.ErrorCode;
+import api.stock.stock.api.exception.IPOApplicationException;
 import api.stock.stock.global.response.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -24,73 +25,43 @@ public class LikesService {
         this.modelMapper = modelMapper;
     }
 
-    public ResponseDto<LikesEntity> addLike(LikesDto dto){
-        LikesEntity like= modelMapper.map(dto, LikesEntity.class);
-        try{
-            boolean isLiked = likesRepository.existsByUserEmailAndBoardId(like.getUserEmail(), like.getBoardId());
-            if (isLiked) {
-                return ResponseDto.setFailed("Already Liked");
-            }
-            Integer boardId = like.getBoardId();
-            boardService.increaseLike(boardId);
-            likesRepository.save(like);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-             
+    public ResponseDto<LikesEntity> addLike(LikesDto dto) {
+        boolean isLiked = likesRepository.existsByUserEmailAndBoardId(dto.getUserEmail(), dto.getBoardId());
+        if (isLiked) {
+            throw new IPOApplicationException(ErrorCode.DUPLICATED_LIKED, String.format("user email is %s", dto.getUserEmail()));
         }
-
-        return ResponseDto.setSuccess("Success",like);
+        LikesEntity like = modelMapper.map(dto, LikesEntity.class);
+        Integer boardId = like.getBoardId();
+        boardService.increaseLike(boardId);
+        likesRepository.save(like);
+        return ResponseDto.setSuccess("Success", like);
     }
 
-    public ResponseDto<String> deleteLike(Integer boardId, String userEmail) {
-        try{
-            // 데이터베이스에서 사용자의 닉네임과 게시글 번호에 해당하는 좋아요 삭제
-            likesRepository.deleteByBoardIdAndUserEmail(boardId, userEmail);
-            // 해당 게시글의 좋아요 개수 감소
-            boardService.decreaseLike(boardId);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
-
-        return ResponseDto.setSuccess("Success","Delete Completed");
+    public ResponseDto<Void> deleteLike(Integer boardId, String userEmail) {
+        // 데이터베이스에서 사용자의 닉네임과 게시글 번호에 해당하는 좋아요 삭제
+        likesRepository.deleteByBoardIdAndUserEmail(boardId, userEmail);
+        // 해당 게시글의 좋아요 개수 감소
+        boardService.decreaseLike(boardId);
+        return ResponseDto.setSuccess();
     }
-
 
 
     @Transactional(readOnly = true)
-    public ResponseDto<Integer> getLikesCount(Integer boardId){
-        Integer count = 0;
-        Integer check;
-        BoardEntity board = null;
-        try{
-            check = boardService.getLikeCount(boardId);
-            count = likesRepository.countByBoardId(boardId);
-            if(count!=check){
-                boardService.updateLike(boardId,count);
-            }
-
-        }catch (Exception e){
-            throw new RuntimeException(e);
+    public ResponseDto<Void> updateLikesCount(Integer boardId) {
+        int check = boardService.getLikeCount(boardId);
+        int count = likesRepository.countByBoardId(boardId);
+        if (count != check) {
+            boardService.updateLike(boardId, count);
         }
-
-        return ResponseDto.setSuccess("Success",count);
+        return ResponseDto.setSuccess();
     }
 
-    public void deleteByBoard(Integer boardId){
-        try{
-            likesRepository.deleteAllByBoardId(boardId);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
-
+    public void deleteByBoard(Integer boardId) {
+        likesRepository.deleteAllByBoardId(boardId);
     }
 
-    public void deleteByWithdraw(String userEmail){
-        try{
-            likesRepository.deleteAllByUserEmail(userEmail);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
+    public void deleteByWithdraw(String userEmail) {
+        likesRepository.deleteAllByUserEmail(userEmail);
     }
 
 

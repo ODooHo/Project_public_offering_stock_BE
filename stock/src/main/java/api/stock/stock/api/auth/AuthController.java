@@ -41,7 +41,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseDto<String> logout(@RequestHeader String token){
+    public ResponseDto<Void> logout(@RequestHeader String token){
         return authService.logout(token);
     }
 
@@ -51,7 +51,7 @@ public class AuthController {
     }
 
     @DeleteMapping("/withDraw")
-    public ResponseDto<String> withDraw(@AuthenticationPrincipal String userEmail){
+    public ResponseDto<Void> withDraw(@AuthenticationPrincipal String userEmail){
         return deleteApplication.widthDraw(userEmail);
     }
 

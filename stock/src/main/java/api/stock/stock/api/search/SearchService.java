@@ -31,93 +31,46 @@ public class SearchService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<List<SearchEntity>>getRecentBoard(String userEmail){
-        List<SearchEntity> search = new ArrayList<>();
-        try{
-            search = searchRepository.findRecent(userEmail,"board");
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
-
-        return ResponseDto.setSuccess("Success",search);
+    public ResponseDto<List<SearchEntity>> getRecentBoard(String userEmail) {
+        return ResponseDto.setSuccess("Success", searchRepository.findRecent(userEmail, "board"));
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<List<SearchEntity>>getRecentIpo(String userEmail){
-        List<SearchEntity> search = new ArrayList<>();
-        try{
-            search = searchRepository.findRecent(userEmail,"ipo");
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
-
-        return ResponseDto.setSuccess("Success",search);
+    public ResponseDto<List<SearchEntity>> getRecentIpo(String userEmail) {
+        return ResponseDto.setSuccess("Success", searchRepository.findRecent(userEmail, "ipo"));
     }
 
 
-
-    public ResponseDto<List<BoardEntity>> searchBoard(SearchDto dto){
-        SearchEntity search = modelMapper.map(dto,SearchEntity.class);
-        String userEmail = search.getUserEmail();
-        String searchContent = search.getSearchContent();
-        List<BoardEntity> board = null;
-        try{
+    public ResponseDto<List<BoardEntity>> searchBoard(SearchDto dto) {
+        List<BoardEntity> board = boardService.searchBoard(dto.getSearchContent());
+        if (!searchRepository.existsByUserEmailAndSearchContent(dto.getUserEmail(), dto.getSearchContent())) {
+            SearchEntity search = modelMapper.map(dto, SearchEntity.class);
             search.setCategory("board");
-            String searchWord = search.getSearchContent();
-            board = boardService.searchBoard(searchWord);
-            if (!searchRepository.existsByUserEmailAndSearchContent(userEmail,searchContent)){
-                searchRepository.save(search);
-            }
-        }catch (Exception e){
-            throw new RuntimeException(e);
+            searchRepository.save(search);
         }
-
-
-        return ResponseDto.setSuccess("Success",board);
+        return ResponseDto.setSuccess("Success", board);
     }
 
-    public ResponseDto<List<IpoEntity>> searchIpo(SearchDto dto){
-        SearchEntity search = modelMapper.map(dto,SearchEntity.class);
-        String userEmail = search.getUserEmail();
-        String searchContent = search.getSearchContent();
-        List<IpoEntity> ipo = null;
-        try {
+    public ResponseDto<List<IpoEntity>> searchIpo(SearchDto dto) {
+        List<IpoEntity> ipo = ipoService.searchIpo(dto.getSearchContent());
+        if (!searchRepository.existsByUserEmailAndSearchContent(dto.getUserEmail(), dto.getSearchContent())) {
+            SearchEntity search = modelMapper.map(dto, SearchEntity.class);
             search.setCategory("ipo");
-            String searchWord = search.getSearchContent();
-            ipo = ipoService.searchIpo(searchWord);
-            if (!searchRepository.existsByUserEmailAndSearchContent(userEmail,searchContent)){
-                searchRepository.save(search);
-            }
-        }catch (Exception e){
-                throw new RuntimeException(e);
+            searchRepository.save(search);
         }
-        return ResponseDto.setSuccess("Success",ipo);
+        return ResponseDto.setSuccess("Success", ipo);
 
     }
 
-    public ResponseDto<String> deleteSearchWord(Integer searchId){
-        try{
-            searchRepository.deleteById(searchId);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
-
-        return ResponseDto.setSuccess("Success","Delete Completed");
+    public ResponseDto<Void> deleteSearchWord(Integer searchId) {
+        searchRepository.deleteById(searchId);
+        return ResponseDto.setSuccess();
     }
 
 
-    public void deleteByWithdraw(String userEmail){
-        try{
-            searchRepository.deleteAllByUserEmail(userEmail);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
+    public void deleteByWithdraw(String userEmail) {
+        searchRepository.deleteAllByUserEmail(userEmail);
     }
-
-
-
-
-
 
 
 }

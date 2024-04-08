@@ -33,7 +33,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/{boardId}/delete/{commentId}")
-    ResponseDto<String> deleteComment(@AuthenticationPrincipal String userEmail, @PathVariable Integer commentId){
+    ResponseDto<Void> deleteComment(@AuthenticationPrincipal String userEmail, @PathVariable Integer commentId){
         return commentService.deleteComment(userEmail, commentId);
     }
 

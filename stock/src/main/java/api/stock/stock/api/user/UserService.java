@@ -1,5 +1,7 @@
 package api.stock.stock.api.user;
 
+import api.stock.stock.api.exception.ErrorCode;
+import api.stock.stock.api.exception.IPOApplicationException;
 import api.stock.stock.api.file.FileService;
 import api.stock.stock.global.response.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
@@ -24,59 +26,22 @@ public class UserService {
 
     public ResponseDto<PatchUserResponseDto> patchUser(String userNickname, MultipartFile userProfile, String userEmail) {
         UserEntity userEntity = null;
-
-        try{
-            userEntity = userRepository.findById(userEmail).orElse(null);
-            if(userEntity == null){
-                return ResponseDto.setFailed("Does Not Exist User");
-            }
-            if (userNickname != null) {
-                userEntity.setUserNickname(userNickname);
-            }
-            fileService.setProfile(userProfile, userEmail);
-            userRepository.save(userEntity);
-
-
-        }catch (Exception e){
-            throw new RuntimeException(e);
-             
+        userEntity = userRepository.findById(userEmail).orElseThrow(
+                () -> new IPOApplicationException(ErrorCode.USER_NOT_FOUND, String.format("userEmail is %s", userEmail))
+        );
+        if (userNickname != null) {
+            userEntity.setUserNickname(userNickname);
         }
-
+        fileService.setProfile(userProfile, userEmail);
+        userRepository.save(userEntity);
         userEntity.setUserPassword("");
         PatchUserResponseDto patchUserResponseDto = new PatchUserResponseDto(userEntity);
 
-        return ResponseDto.setSuccess("Success",patchUserResponseDto);
+        return ResponseDto.setSuccess("Success", patchUserResponseDto);
     }
 
-    public void withDraw(String userEmail){
-        try{
-            userRepository.deleteById(userEmail);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
+    public void withDraw(String userEmail) {
+        userRepository.deleteById(userEmail);
     }
-
-    public void setProfile(String userEmail, String profileName){
-        UserEntity user = null;
-        try{
-            user = userRepository.findById(userEmail).orElse(null);
-            user.setUserProfile(profileName);
-            userRepository.save(user);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void deleteProfile(String userEmail){
-        UserEntity user = null;
-        try{
-            user = userRepository.findById(userEmail).orElse(null);
-            user.setUserProfile("default.jpg");
-            userRepository.save(user);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
-    }
-
 
 }

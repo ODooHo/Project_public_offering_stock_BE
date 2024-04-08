@@ -21,14 +21,14 @@ public class LikesController {
     }
 
     @DeleteMapping("/{boardId}/likes/delete")
-    ResponseDto<String> deleteLike(@PathVariable Integer boardId, @AuthenticationPrincipal String userEmail){
+    ResponseDto<Void> deleteLike(@PathVariable Integer boardId, @AuthenticationPrincipal String userEmail){
         return likesService.deleteLike(boardId, userEmail);
     }
 
 
     @GetMapping("/{boardId}/likes/get/count")
-    ResponseDto<Integer> getLikesCount(@PathVariable Integer boardId){
-        return likesService.getLikesCount(boardId);
+    ResponseDto<Void> UpdateLikesCount(@PathVariable Integer boardId){
+        return likesService.updateLikesCount(boardId);
     }
 
 }

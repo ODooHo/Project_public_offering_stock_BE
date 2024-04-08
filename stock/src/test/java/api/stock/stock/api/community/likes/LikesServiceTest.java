@@ -40,7 +40,7 @@ class LikesServiceTest {
         //given
         Integer boardId = 1;
         //when
-        ResponseDto<Integer> response = likesService.getLikesCount(1);
+        ResponseDto<Integer> response = likesService.updateLikesCount(1);
         //then
         assertThat(response.getMessage()).isEqualTo("Success");
         assertThat(response.getData()).isNotNull();

@@ -3,6 +3,8 @@ package api.stock.stock.api.app;
 import api.stock.stock.api.community.board.BoardService;
 import api.stock.stock.api.community.comment.CommentService;
 import api.stock.stock.api.community.likes.LikesService;
+import api.stock.stock.api.exception.ErrorCode;
+import api.stock.stock.api.exception.IPOApplicationException;
 import api.stock.stock.api.file.FileService;
 import api.stock.stock.api.ipo.favor.FavorService;
 import api.stock.stock.api.search.SearchService;
@@ -40,19 +42,19 @@ public class DeleteApplication {
     }
 
 
-    public ResponseDto<String> deleteBoard(String userEmail, Integer boardId){
+    public ResponseDto<Void> deleteBoard(String userEmail, Integer boardId){
         try{
             fileService.deleteBoardImage(boardId);
             commentService.deleteByBoard(boardId);
             likesService.deleteByBoard(boardId);
             boardService.deleteBoard(userEmail,boardId);
         }catch (Exception e){
-             
+             throw new IPOApplicationException(ErrorCode.DATABASE_ERROR);
         }
-        return ResponseDto.setSuccess("delete Completed","");
+        return ResponseDto.setSuccess();
     }
 
-    public ResponseDto<String> widthDraw(String userEmail){
+    public ResponseDto<Void> widthDraw(String userEmail){
         try{
             boardService.deleteByWithdraw(userEmail);
             commentService.deleteByWithdraw(userEmail);
@@ -62,11 +64,11 @@ public class DeleteApplication {
             searchService.deleteByWithdraw(userEmail);
             userService.withDraw(userEmail);
         }catch (Exception e){
-            throw new RuntimeException(e);
+            throw new IPOApplicationException(ErrorCode.DATABASE_ERROR);
              
         }
 
-        return ResponseDto.setSuccess("Success", "Delete Completed");
+        return ResponseDto.setSuccess();
     }
 
 }

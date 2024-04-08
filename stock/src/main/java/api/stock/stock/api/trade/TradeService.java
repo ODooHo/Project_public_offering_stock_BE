@@ -1,8 +1,11 @@
 package api.stock.stock.api.trade;
 
+import api.stock.stock.api.exception.ErrorCode;
+import api.stock.stock.api.exception.IPOApplicationException;
 import api.stock.stock.global.response.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,64 +24,37 @@ public class TradeService {
         this.modelMapper = modelMapper;
     }
 
-    public ResponseDto<TradeEntity> createTrade(TradeDto dto){
+    public ResponseDto<TradeEntity> createTrade(TradeDto dto) {
         String tradeName = dto.getTradeName();
-        try{
-            if (tradeRepository.existsByTradeName(tradeName)){
-                return ResponseDto.setFailed("Trade already Exist!");
-            }
-        }catch (Exception e){
-            throw new RuntimeException(e);
+        if (tradeRepository.existsByTradeName(tradeName)) {
+            throw new IPOApplicationException(ErrorCode.DUPLICATED_TRADE_NAME);
         }
-
-        TradeEntity trade = modelMapper.map(dto,TradeEntity.class);
-        
-        try{
-            tradeRepository.save(trade);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
-        return ResponseDto.setSuccess("Success",trade);
+        TradeEntity trade = modelMapper.map(dto, TradeEntity.class);
+        tradeRepository.save(trade);
+        return ResponseDto.setSuccess("Success", trade);
     }
 
-    public ResponseDto<String> deleteTrade(String userEmail, Integer tradeId){
-        TradeEntity trade = tradeRepository.findById(tradeId).orElse(null);
+    public ResponseDto<String> deleteTrade(String userEmail, Integer tradeId) {
+        TradeEntity trade = tradeRepository.findById(tradeId).orElseThrow(
+                () -> new IPOApplicationException(ErrorCode.TRADE_NOT_FOUND, String.format("trade Id is %s", tradeId))
+        );
         String tradeUserEmail = trade.getUserEmail();
 
-        if(!userEmail.equals(tradeUserEmail)){
-            return ResponseDto.setFailed("Wrong Request(userEmail doesn't Match)");
+        if (!userEmail.equals(tradeUserEmail)) {
+            throw new IPOApplicationException(ErrorCode.INVALID_PERMISSION);
         }
-
-        try{
-            tradeRepository.deleteById(tradeId);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
-        return ResponseDto.setSuccess("Success","Delete Completed");
+        tradeRepository.deleteById(tradeId);
+        return ResponseDto.setSuccess("Success", "Delete Completed");
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<List<TradeEntity>> getTradeList(String userEmail){
-        List<TradeEntity> tradeList = new ArrayList<>();
-
-        try{
-            tradeList = tradeRepository.findByUserEmail(userEmail);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
-
-        return ResponseDto.setSuccess("Success",tradeList);
+    public ResponseDto<List<TradeEntity>> getTradeList(String userEmail) {
+        return ResponseDto.setSuccess("Success", tradeRepository.findByUserEmail(userEmail));
     }
 
 
-    public void deleteByWithdraw(String userEmail){
-        try{
-            tradeRepository.deleteAllByUserEmail(userEmail);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
+    public void deleteByWithdraw(String userEmail) {
+        tradeRepository.deleteAllByUserEmail(userEmail);
     }
-
-
 
 }

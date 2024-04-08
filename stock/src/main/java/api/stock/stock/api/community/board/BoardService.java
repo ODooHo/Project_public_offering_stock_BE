@@ -1,5 +1,7 @@
 package api.stock.stock.api.community.board;
 
+import api.stock.stock.api.exception.ErrorCode;
+import api.stock.stock.api.exception.IPOApplicationException;
 import api.stock.stock.api.file.FileService;
 import api.stock.stock.global.response.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +30,6 @@ public class BoardService {
     }
 
 
-
     public ResponseDto<BoardEntity> register(
             String boardTitle,
             String boardContent,
@@ -46,193 +47,134 @@ public class BoardService {
         board.setBoardWriterNickname(boardWriterNickname);
         board.setBoardWriteDate(LocalDate.now());
         boardRepository.save(board);
-        try{
-            fileService.uploadImage(boardImage,board);
-            boardRepository.save(board);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-             
-        }
-        return ResponseDto.setSuccess("Success",board);
+        fileService.uploadImage(boardImage, board);
+        boardRepository.save(board);
+        return ResponseDto.setSuccess("Success", board);
     }
 
     @Transactional(readOnly = true)
     public ResponseDto<BoardEntity> getBoard(Integer boardId) {
-        BoardEntity board = new BoardEntity();
-        try{
-            board = boardRepository.findById(boardId).orElse(null);
-            Integer current = board.getBoardClickCount();
-            board.setBoardClickCount(current + 1);
-            boardRepository.save(board);
-        }catch (Exception e) {
-            throw new RuntimeException(e);
-             
-        }
-        return ResponseDto.setSuccess("Success",board);
+        BoardEntity board = boardRepository.findById(boardId).orElseThrow(
+                () -> new IPOApplicationException(ErrorCode.BOARD_NOT_FOUND)
+        );
+        int current = board.getBoardClickCount();
+        board.setBoardClickCount(current + 1);
+        boardRepository.save(board);
+        return ResponseDto.setSuccess("Success", board);
     }
 
     @Transactional(readOnly = true)
     public ResponseDto<List<BoardEntity>> getList() {
-        List<BoardEntity> boardList = new ArrayList<>();
-        try{
-            boardList = boardRepository.findList();
-        }catch (Exception e){
-
-             
-        }
-
-        return ResponseDto.setSuccess("Success", boardList);
+        return ResponseDto.setSuccess("Success", boardRepository.findList());
     }
 
     @Transactional(readOnly = true)
-    public Integer getLikeCount(Integer boardId){
-        BoardEntity board = null;
-        Integer result = null;
-        try{
-            board = boardRepository.findById(boardId).orElse(null);
-            result = board.getBoardLikeCount();
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
-        return result;
+    public Integer getLikeCount(Integer boardId) {
+        BoardEntity board = boardRepository.findById(boardId).orElseThrow(
+                () -> new IPOApplicationException(ErrorCode.BOARD_NOT_FOUND)
+        );
+        return board.getBoardLikeCount();
     }
 
 
-    public ResponseDto<PatchBoardResponseDto> patchBoard(String userEmail, Integer boardId, PatchBoardDto dto){
-        BoardEntity board = boardRepository.findById(boardId).orElse(null);
+    public ResponseDto<PatchBoardResponseDto> patchBoard(String userEmail, Integer boardId, PatchBoardDto dto) {
+        BoardEntity board = boardRepository.findById(boardId).orElseThrow(
+                () -> new IPOApplicationException(ErrorCode.BOARD_NOT_FOUND)
+        );
         String boardUserEmail = board.getBoardWriterEmail();
-        if(!userEmail.equals(boardUserEmail)){
-            return ResponseDto.setFailed("Wrong Request(userEmail doesn't Match)");
+        if (!userEmail.equals(boardUserEmail)) {
+            throw new IPOApplicationException(ErrorCode.INVALID_PERMISSION);
         }
-        String boardTitle = dto.getBoardTitle();
-        String boardContent = dto.getBoardContent();
-        LocalDate date = LocalDate.now();
 
-        try{
-            board.setBoardTitle(boardTitle);
-            board.setBoardContent(boardContent);
-            board.setBoardWriteDate(date);
-            boardRepository.save(board);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-             
-        }
+        board.setBoardTitle(dto.getBoardTitle());
+        board.setBoardContent(dto.getBoardContent());
+        board.setBoardWriteDate(LocalDate.now());
+        boardRepository.save(board);
+
         PatchBoardResponseDto response = new PatchBoardResponseDto(board);
 
 
-        return ResponseDto.setSuccess("Success",response);
+        return ResponseDto.setSuccess("Success", response);
     }
 
-    public ResponseDto<String> deleteBoard(String userEmail, Integer boardId){
-        BoardEntity board = boardRepository.findById(boardId).orElse(null);
+    public ResponseDto<String> deleteBoard(String userEmail, Integer boardId) {
+        BoardEntity board = boardRepository.findById(boardId).orElseThrow(
+                () -> new IPOApplicationException(ErrorCode.BOARD_NOT_FOUND)
+        );
         String boardWriterEmail = board.getBoardWriterEmail();
-        if(!userEmail.equals(boardWriterEmail)){
-            return ResponseDto.setFailed("Wrong Request(userEmail doesn't Match)");
+        if (!userEmail.equals(boardWriterEmail)) {
+            throw new IPOApplicationException(ErrorCode.INVALID_PERMISSION);
         }
-        try{
-            boardRepository.deleteById(boardId);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-             
-        }
-        return ResponseDto.setSuccess("Success","Delete Completed");
+        boardRepository.deleteById(boardId);
+        return ResponseDto.setSuccess("Success", "Delete Completed");
     }
 
-    public void deleteByWithdraw(String userEmail){
+    public void deleteByWithdraw(String userEmail) {
         List<BoardEntity> boardList = boardRepository.findByBoardWriterEmail(userEmail);
-
-        try{
-            for (BoardEntity board : boardList) {
-                Integer boardId = board.getBoardId();
-                fileService.deleteBoardImage(boardId);
-                deleteBoard(userEmail,boardId);
-            }
-        }catch (Exception e){
-            throw new RuntimeException(e);
+        for (BoardEntity board : boardList) {
+            Integer boardId = board.getBoardId();
+            fileService.deleteBoardImage(boardId);
+            deleteBoard(userEmail, boardId);
         }
     }
 
     @Transactional(readOnly = true)
-    public List<BoardEntity> searchBoard(String searchWord){
-        List<BoardEntity> result = new ArrayList<>();
-        try{
-            result = boardRepository.findByBoardTitleContains(searchWord);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
-        return result;
+    public List<BoardEntity> searchBoard(String searchWord) {
+        return boardRepository.findByBoardTitleContains(searchWord);
     }
 
-    public void increaseComment(Integer boardId){
-        BoardEntity board = null;
-        try{
-            board = boardRepository.findById(boardId).orElse(null);
-            Integer count = board.getBoardCommentCount() + 1;
-            board.setBoardCommentCount(count);
-            boardRepository.save(board);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
+    public void increaseComment(Integer boardId) {
+        BoardEntity board = boardRepository.findById(boardId).orElseThrow(
+                () -> new IPOApplicationException(ErrorCode.BOARD_NOT_FOUND)
+        );
+        Integer count = board.getBoardCommentCount() + 1;
+        board.setBoardCommentCount(count);
+        boardRepository.save(board);
     }
 
-    public void updateProfile(String userEmail, String profileName){
+    public void updateProfile(String userEmail, String profileName) {
         List<BoardEntity> boardList = boardRepository.findByBoardWriterEmail(userEmail);
-        try{
-            for (BoardEntity board : boardList) {
-                board.setBoardWriterProfile(profileName);
-                boardRepository.save(board);
-            }
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    public void updateLike(Integer boardId,Integer count){
-        BoardEntity board = null;
-        try{
-            board = boardRepository.findById(boardId).orElse(null);
-            board.setBoardLikeCount(count);
+        for (BoardEntity board : boardList) {
+            board.setBoardWriterProfile(profileName);
             boardRepository.save(board);
-        }catch (Exception e){
-            throw new RuntimeException(e);
         }
     }
 
-    public void increaseLike(Integer boardId){
-        BoardEntity board = null;
-        try{
-            board = boardRepository.findById(boardId).orElse(null);
-            Integer count = board.getBoardLikeCount() + 1;
-            board.setBoardLikeCount(count);
-            boardRepository.save(board);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
+
+    public void updateLike(Integer boardId, Integer count) {
+        BoardEntity board = boardRepository.findById(boardId).orElseThrow(
+                () -> new IPOApplicationException(ErrorCode.BOARD_NOT_FOUND)
+        );
+        board.setBoardLikeCount(count);
+        boardRepository.save(board);
     }
 
-    public void decreaseLike(Integer boardId){
-        BoardEntity board = null;
-        try{
-            board = boardRepository.findById(boardId).orElse(null);
-            Integer count = board.getBoardLikeCount() - 1;
-            board.setBoardLikeCount(count);
-            boardRepository.save(board);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
+    public void increaseLike(Integer boardId) {
+        BoardEntity board = boardRepository.findById(boardId).orElseThrow(
+                () -> new IPOApplicationException(ErrorCode.BOARD_NOT_FOUND)
+        );
+        Integer count = board.getBoardLikeCount() + 1;
+        board.setBoardLikeCount(count);
+        boardRepository.save(board);
     }
+
+    public void decreaseLike(Integer boardId) {
+        BoardEntity board = boardRepository.findById(boardId).orElseThrow(
+                () -> new IPOApplicationException(ErrorCode.BOARD_NOT_FOUND)
+        );
+        Integer count = board.getBoardLikeCount() - 1;
+        board.setBoardLikeCount(count);
+        boardRepository.save(board);
+    }
+
     public void setImageName(Integer boardId, String imageName) {
-        BoardEntity board = null;
-        try{
-            board = boardRepository.findById(boardId).orElse(null);
-            board.setBoardImage(imageName);
-            boardRepository.save(board);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
-    }
+        BoardEntity board = boardRepository.findById(boardId).orElseThrow(
+                () -> new IPOApplicationException(ErrorCode.BOARD_NOT_FOUND)
+        );
+        board.setBoardImage(imageName);
+        boardRepository.save(board);
 
+    }
 
 
 }

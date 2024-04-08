@@ -2,6 +2,8 @@ package api.stock.stock.api.file;
 
 import api.stock.stock.api.community.board.BoardEntity;
 import api.stock.stock.api.community.board.BoardRepository;
+import api.stock.stock.api.exception.ErrorCode;
+import api.stock.stock.api.exception.IPOApplicationException;
 import api.stock.stock.api.user.UserEntity;
 import api.stock.stock.api.user.UserRepository;
 import api.stock.stock.global.response.ResponseDto;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -46,104 +49,81 @@ public class FileService {
         this.amazonS3 = amazonS3;
     }
 
+    /**
+     * entity 주고받는거 dto로 변환할 생각 해보자.
+     * 근데 아마 이게 반영이 제대로 안되는거로 알고있음
+     */
 
     @Transactional
-    public ResponseDto<String> uploadImage(MultipartFile boardImage, BoardEntity board) {
-        try{
-            if (boardImage != null){
-                String fileName = board.getBoardId() + ".jpg";
-                board.setBoardImage(fileName);
-                String path = uploadDir + "img/" + fileName;
-                uploadFileToS3(boardImage,path);
-            }else{
-                board.setBoardImage(null);
-            }
-
-            boardRepository.save(board);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    public ResponseDto<Void> uploadImage(MultipartFile boardImage, BoardEntity board) {
+        if (boardImage != null) {
+            String fileName = board.getBoardId() + ".jpg";
+            board.setBoardImage(fileName);
+            String path = uploadDir + "img/" + fileName;
+            uploadFileToS3(boardImage, path);
+        } else {
+            board.setBoardImage(null);
         }
-
-        return ResponseDto.setSuccess("Success", "OK");
+        boardRepository.save(board);
+        return ResponseDto.setSuccess();
     }
 
     @Transactional
-    public ResponseDto<String> setProfile(MultipartFile file, String userEmail) {
-        UserEntity user = userRepository.findById(userEmail).orElse(null);
-
-        List<BoardEntity> boardEntity = boardRepository.findByBoardWriterEmail(userEmail);
-
+    public ResponseDto<Void> setProfile(MultipartFile file, String userEmail) {
+        UserEntity user = userRepository.findById(userEmail).orElseThrow(
+                () -> new IPOApplicationException(ErrorCode.USER_NOT_FOUND, String.format("user email is %s", userEmail))
+        );
+        List<BoardEntity> boardList = boardRepository.findByBoardWriterEmail(userEmail);
         String fileName = user.getUserEmail() + "." + "jpg";
-        try {
-            // S3 버킷에 파일 업로드
-            uploadFileToS3(file, uploadDir + "profile/"+fileName);
-
-            user.setUserProfile(fileName);
-            userRepository.save(user);
-
-            for (BoardEntity board : boardEntity) {
-                board.setBoardWriterProfile(fileName);
-                boardRepository.save(board);
-            }
-
-            return ResponseDto.setSuccess("Success", fileName);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        // S3 버킷에 파일 업로드
+        uploadFileToS3(file, uploadDir + "profile/" + fileName);
+        user.setUserProfile(fileName);
+        userRepository.save(user);
+        for (BoardEntity board : boardList) {
+            board.setBoardWriterProfile(fileName);
+            boardRepository.save(board);
         }
+        return ResponseDto.setSuccess();
     }
 
-    public ResponseEntity<byte[]> getProfileImage(String userEmail){
+    public ResponseEntity<byte[]> getProfileImage(String userEmail) {
         String imageName = userEmail + ".jpg";
-
-        return getImage(imageName,"profile/");
+        return getImage(imageName, "profile/");
     }
 
-    public ResponseEntity<byte[]> getBoardImage(Integer boardId){
+    public ResponseEntity<byte[]> getBoardImage(Integer boardId) {
         String imageName = boardId + ".jpg";
-        return getImage(imageName,"img/");
+        return getImage(imageName, "img/");
     }
 
-    public void deleteBoardImage(Integer boardId){
+    public void deleteBoardImage(Integer boardId) {
         String imageName = boardId + ".jpg";
         String path = uploadDir + "img/" + imageName;
-        try{
-            amazonS3.deleteObject(bucketName,path);
-        }catch (AmazonS3Exception e){
-            throw new RuntimeException(e);
-
-        }
+        amazonS3.deleteObject(bucketName, path);
     }
 
-    public ResponseDto<String> deleteProfileImage(String userEmail){
+    public ResponseDto<Void> deleteProfileImage(String userEmail) {
         String imageName = userEmail + ".jpg";
         String path = uploadDir + "profile/" + imageName;
-        try{
-            amazonS3.deleteObject(bucketName,path);
-        }catch (AmazonS3Exception e){
-            throw new RuntimeException(e);
-        }
-        return ResponseDto.setSuccess("Success","Delete Completed");
-
+        amazonS3.deleteObject(bucketName, path);
+        return ResponseDto.setSuccess();
     }
-
-
 
 
     private ResponseEntity<byte[]> getImage(String imageName, String path) {
-        if (imageName == null){
+        if (imageName == null) {
             HttpHeaders headers = new HttpHeaders();
             MediaType mediaType = MediaType.ALL;
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(null);
         }
-        try {
+        try{
             String fileName = imageName + ".jpg";
 
             S3Object s3Object = amazonS3.getObject(bucketName, uploadDir + path + fileName);
             S3ObjectInputStream objectInputStream = s3Object.getObjectContent();
             byte[] imageData = IOUtils.toByteArray(objectInputStream);
-
 
             HttpHeaders headers = new HttpHeaders();
             MediaType mediaType = MediaType.IMAGE_JPEG;
@@ -153,15 +133,10 @@ public class FileService {
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(imageData);
-        } catch (AmazonS3Exception e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
+        } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//          throw new RuntimeException(e);
         }
     }
-
-
 
 
     private void uploadFileToS3(MultipartFile file, String s3Key) {
@@ -170,8 +145,8 @@ public class FileService {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.getSize());
             amazonS3.putObject(new PutObjectRequest(bucketName, s3Key, inputStream, metadata));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new IPOApplicationException(ErrorCode.DATABASE_ERROR,"IOException");
         }
     }
 

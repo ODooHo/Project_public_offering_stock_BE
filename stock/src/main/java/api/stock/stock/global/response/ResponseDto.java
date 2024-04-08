@@ -1,19 +1,39 @@
 package api.stock.stock.global.response;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor(staticName = "set")
-public class ResponseDto<D>{
-    private boolean result;
-    private String message;
-    private D data;
+@NoArgsConstructor
+@AllArgsConstructor
+public class ResponseDto<T> {
+    String message;
+    T data;
 
-    public static <D> ResponseDto<D> setSuccess(String message, D data){
-        return ResponseDto.set(true,message,data);
-    }
-    public static <D> ResponseDto<D> setFailed(String message){
-        return ResponseDto.set(false,message,null);
+
+    public static <T> ResponseDto<T> setSuccess() {
+        return new ResponseDto<T>("Success", null);
     }
 
+    public static <T> ResponseDto<T> setSuccess(String message, T data) {
+        return new ResponseDto<>("Success", data);
+    }
+
+    public static ResponseDto<Void> error(String message) {
+        return new ResponseDto<Void>(message, null);
+    }
+
+    public String toStream() {
+        if (data == null) {
+            return "{" +
+                    "\"message\":" + "\"" + message + "\"," +
+                    "\"data\":" + null +
+                    "}";
+        }
+        return "{" +
+                "\"message\":" + "\"" + message + "\"," +
+                "\"data\":" + "\"" + data + "\"," +
+                "}";
+    }
 }

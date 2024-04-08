@@ -1,6 +1,8 @@
 package api.stock.stock.api.community.comment;
 
 import api.stock.stock.api.community.board.BoardService;
+import api.stock.stock.api.exception.ErrorCode;
+import api.stock.stock.api.exception.IPOApplicationException;
 import api.stock.stock.global.response.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -28,90 +30,58 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public ResponseDto<List<CommentEntity>> getComment(Integer boardId) {
-        List<CommentEntity> commentList = new ArrayList<>();
-        try{
-            commentList = commentRepository.findByBoardId(boardId);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-             
-        }
-
+        List<CommentEntity> commentList = commentRepository.findByBoardId(boardId);
         return ResponseDto.setSuccess("Success", commentList);
     }
 
     public ResponseDto<CommentEntity> writeComment(Integer boardId, CommentDto dto) {
-        CommentEntity comment = modelMapper.map(dto,CommentEntity.class);
+        CommentEntity comment = modelMapper.map(dto, CommentEntity.class);
         comment.setCommentWriteDate(LocalDate.now());
-        try{
-            boardService.increaseComment(boardId);
-            commentRepository.save(comment);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-             
-        }
+        boardService.increaseComment(boardId);
+        commentRepository.save(comment);
         return ResponseDto.setSuccess("Success", comment);
     }
 
-    public ResponseDto<PatchCommentResponseDto> patchComment(String userEmail,Integer commentId, PatchCommentDto dto){
-        CommentEntity comment = commentRepository.findById(commentId).orElse(null);
+    public ResponseDto<PatchCommentResponseDto> patchComment(String userEmail, Integer commentId, PatchCommentDto dto) {
+        CommentEntity comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new IPOApplicationException(ErrorCode.COMMENT_NOT_FOUND, String.format("Not exists Comment"))
+        );
         String commentUserEmail = comment.getCommentWriterEmail();
-        if(!userEmail.equals(commentUserEmail)){
-            return ResponseDto.setFailed("Wrong Request(userEmail doesn't Match)");
+        if (!userEmail.equals(commentUserEmail)) {
+            throw new IPOApplicationException(ErrorCode.INVALID_PERMISSION, "InValid Permission");
         }
-
-        String commentContent = dto.getCommentContent();
-        LocalDate date = LocalDate.now();
-
-        try{
-            comment.setCommentContent(commentContent);
-            comment.setCommentWriteDate(date);
-            commentRepository.save(comment);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-             
-        }
+        comment.setCommentContent(dto.getCommentContent());
+        comment.setCommentWriteDate(LocalDate.now());
+        commentRepository.save(comment);
 
         PatchCommentResponseDto response = new PatchCommentResponseDto(comment);
 
-        return ResponseDto.setSuccess("Success" , response);
+        return ResponseDto.setSuccess("Success", response);
     }
 
-    public ResponseDto<String> deleteComment(String userEmail, Integer commentId){
-        CommentEntity comment = commentRepository.findById(commentId).orElse(null);
+    public ResponseDto<Void> deleteComment(String userEmail, Integer commentId) {
+        CommentEntity comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new IPOApplicationException(ErrorCode.COMMENT_NOT_FOUND, "Not exists Comment")
+        );
         String commentWriterEmail = comment.getCommentWriterEmail();
 
-        if (!commentWriterEmail.equals(userEmail)){
-            return ResponseDto.setFailed("Wrong Request(userEmail doesn't Match)");
+        if (!commentWriterEmail.equals(userEmail)) {
+            throw new IPOApplicationException(ErrorCode.INVALID_PERMISSION, "InValid Permission");
         }
 
-        try{
-            commentRepository.deleteById(commentId);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-             
-        }
+        commentRepository.deleteById(commentId);
 
-        return ResponseDto.setSuccess("Success","Delete Completed");
+        return ResponseDto.setSuccess();
     }
 
-    public ResponseDto<String> deleteByBoard(Integer boardId){
-        try{
-            commentRepository.deleteAllByBoardId(boardId);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-             
-        }
-
-        return ResponseDto.setSuccess("Success","Delete Completed");
-
+    public ResponseDto<Void> deleteByBoard(Integer boardId) {
+        commentRepository.deleteAllByBoardId(boardId);
+        return ResponseDto.setSuccess();
     }
-    public void deleteByWithdraw(String userEmail){
-        try{
-            commentRepository.deleteAllByCommentWriterEmail(userEmail);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
 
+    public ResponseDto<Void> deleteByWithdraw(String userEmail) {
+        commentRepository.deleteAllByCommentWriterEmail(userEmail);
+        return ResponseDto.setSuccess();
     }
 
 

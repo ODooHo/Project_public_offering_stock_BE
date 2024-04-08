@@ -56,7 +56,7 @@ public class BoardController {
 
 
     @DeleteMapping("/delete/{boardId}")
-    public ResponseDto<String> deleteBoard(@AuthenticationPrincipal String userEmail, @PathVariable Integer boardId){
+    public ResponseDto<Void> deleteBoard(@AuthenticationPrincipal String userEmail, @PathVariable Integer boardId){
         return deleteApplication.deleteBoard(userEmail,boardId);
     }
 

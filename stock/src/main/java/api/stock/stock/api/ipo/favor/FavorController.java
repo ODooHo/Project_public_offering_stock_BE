@@ -31,7 +31,7 @@ public class FavorController {
     }
 
     @DeleteMapping("/{ipoName}/deleteFavor")
-    ResponseDto<String> deleteFavor(@AuthenticationPrincipal String userEmail, @PathVariable String ipoName){
+    ResponseDto<Void> deleteFavor(@AuthenticationPrincipal String userEmail, @PathVariable String ipoName){
         return favorService.deleteFavor(userEmail,ipoName);
     }
 

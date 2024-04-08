@@ -38,7 +38,7 @@ public class SearchController {
     }
 
     @DeleteMapping("/{searchId}/delete")
-    public ResponseDto<String>deleteSearchWord(@PathVariable Integer searchId){
+    public ResponseDto<Void>deleteSearchWord(@PathVariable Integer searchId){
         return searchService.deleteSearchWord(searchId);
     }
 

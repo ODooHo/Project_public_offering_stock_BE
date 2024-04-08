@@ -1,5 +1,7 @@
 package api.stock.stock.api.ipo.favor;
 
+import api.stock.stock.api.exception.ErrorCode;
+import api.stock.stock.api.exception.IPOApplicationException;
 import api.stock.stock.api.ipo.IpoEntity;
 import api.stock.stock.api.ipo.IpoService;
 import api.stock.stock.global.response.ResponseDto;
@@ -30,56 +32,38 @@ public class FavorService {
 
 
     @Transactional(readOnly = true)
-    public ResponseDto<List<IpoEntity>> getFavorList(String userEmail){
-        List<IpoEntity> result = new ArrayList<>();
+    public ResponseDto<List<IpoEntity>> getFavorList(String userEmail) {
         List<String> ipoList = favorRepository.findIpoNameByUserEmail(userEmail);
-        try{
-            result = ipoService.findIpoByName(ipoList);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
-        return ResponseDto.setSuccess("Success",result);
+        List<IpoEntity> result = ipoService.findIpoByName(ipoList);
+        return ResponseDto.setSuccess("Success", result);
     }
 
-    public ResponseDto<FavorEntity> addFavor(FavorDto dto){
-        FavorEntity favor = modelMapper.map(dto,FavorEntity.class);
-        try{
-            String ipoName = favor.getIpoName();
-            String userEmail = favor.getUserEmail();
-            boolean isDuplicate = favorRepository.existsByIpoNameAndUserEmail(ipoName,userEmail);
-            if (isDuplicate){
-                return ResponseDto.setFailed("Already Favor");
-            }
-            favorRepository.save(favor);
-        }catch (Exception e){
-            throw new RuntimeException(e);
+    public ResponseDto<FavorEntity> addFavor(FavorDto dto) {
+        boolean isDuplicate = favorRepository.existsByIpoNameAndUserEmail(dto.getIpoName(), dto.getUserEmail());
+        if (isDuplicate) {
+            throw new IPOApplicationException(ErrorCode.DUPLICATED_FAVOR);
         }
-        return ResponseDto.setSuccess("Success",favor);
+
+        FavorEntity favor = modelMapper.map(dto, FavorEntity.class);
+        favorRepository.save(favor);
+        return ResponseDto.setSuccess("Success", favor);
     }
 
 
-    public ResponseDto<String> deleteFavor(String userEmail, String ipoName){
-        FavorEntity favor = favorRepository.findByIpoNameAndUserEmail(ipoName,userEmail);
+    public ResponseDto<Void> deleteFavor(String userEmail, String ipoName) {
+        FavorEntity favor = favorRepository.findByIpoNameAndUserEmail(ipoName, userEmail);
         String favorUserEmail = favor.getUserEmail();
 
-        if(!userEmail.equals(favorUserEmail)){
-            return ResponseDto.setFailed("Wrong Request(userEmail doesn't Match)");
+        if (!userEmail.equals(favorUserEmail)) {
+            throw new IPOApplicationException(ErrorCode.INVALID_PERMISSION);
         }
 
-        try{
-            favorRepository.deleteByIpoName(ipoName);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
-        return ResponseDto.setSuccess("Success","Delete Completed");
+        favorRepository.deleteByIpoName(ipoName);
+        return ResponseDto.setSuccess();
     }
 
 
-    public void deleteByWithdraw(String userEmail){
-        try{
-            favorRepository.deleteAllByUserEmail(userEmail);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
+    public void deleteByWithdraw(String userEmail) {
+        favorRepository.deleteAllByUserEmail(userEmail);
     }
 }
