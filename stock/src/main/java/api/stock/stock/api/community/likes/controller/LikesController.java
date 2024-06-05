@@ -19,19 +19,22 @@ public class LikesController {
     }
 
     @PostMapping("/{boardId}/likes/add")
-    ResponseDto<LikesEntity> addLike(@RequestBody LikesDto requestBody){
-        return likesService.addLike(requestBody);
+    ResponseDto<LikesDto> addLike(@RequestBody LikesDto requestBody){
+        LikesDto result = likesService.addLike(requestBody);
+        return ResponseDto.setSuccess(result);
     }
 
     @DeleteMapping("/{boardId}/likes/delete")
     ResponseDto<Void> deleteLike(@PathVariable Integer boardId, @AuthenticationPrincipal String userEmail){
-        return likesService.deleteLike(boardId, userEmail);
+        likesService.deleteLike(boardId, userEmail);
+        return ResponseDto.setSuccess();
     }
 
 
     @GetMapping("/{boardId}/likes/get/count")
     ResponseDto<Void> UpdateLikesCount(@PathVariable Integer boardId){
-        return likesService.updateLikesCount(boardId);
+        likesService.updateLikesCount(boardId);
+        return ResponseDto.setSuccess();
     }
 
 }

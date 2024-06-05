@@ -1,7 +1,9 @@
 package api.stock.stock.api.search.service;
 
+import api.stock.stock.api.community.board.domain.dto.BoardDto;
 import api.stock.stock.api.community.board.domain.entity.BoardEntity;
 import api.stock.stock.api.community.board.service.BoardService;
+import api.stock.stock.api.ipo.domain.dto.IpoDto;
 import api.stock.stock.api.ipo.domain.entity.IpoEntity;
 import api.stock.stock.api.ipo.service.IpoService;
 import api.stock.stock.api.search.domain.dto.SearchDto;
@@ -33,40 +35,39 @@ public class SearchService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<List<SearchEntity>> getRecentBoard(String userEmail) {
-        return ResponseDto.setSuccess("Success", searchRepository.findRecent(userEmail, "board"));
+    public List<SearchDto> getRecentBoard(String userEmail) {
+        return searchRepository.findRecent(userEmail, "board").stream().map(SearchDto::from).toList();
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<List<SearchEntity>> getRecentIpo(String userEmail) {
-        return ResponseDto.setSuccess("Success", searchRepository.findRecent(userEmail, "ipo"));
+    public List<SearchDto> getRecentIpo(String userEmail) {
+        return searchRepository.findRecent(userEmail, "ipo").stream().map(SearchDto::from).toList();
     }
 
 
-    public ResponseDto<List<BoardEntity>> searchBoard(SearchDto dto) {
-        List<BoardEntity> board = boardService.searchBoard(dto.getSearchContent());
+    public List<BoardDto> searchBoard(SearchDto dto) {
+        List<BoardDto> boardList = boardService.searchBoard(dto.getSearchContent());
         if (!searchRepository.existsByUserEmailAndSearchContent(dto.getUserEmail(), dto.getSearchContent())) {
             SearchEntity search = modelMapper.map(dto, SearchEntity.class);
             search.setCategory("board");
             searchRepository.save(search);
         }
-        return ResponseDto.setSuccess("Success", board);
+        return boardList;
     }
 
-    public ResponseDto<List<IpoEntity>> searchIpo(SearchDto dto) {
-        List<IpoEntity> ipo = ipoService.searchIpo(dto.getSearchContent());
+    public List<IpoDto> searchIpo(SearchDto dto) {
+        List<IpoDto> ipoList = ipoService.searchIpo(dto.getSearchContent());
         if (!searchRepository.existsByUserEmailAndSearchContent(dto.getUserEmail(), dto.getSearchContent())) {
             SearchEntity search = modelMapper.map(dto, SearchEntity.class);
             search.setCategory("ipo");
             searchRepository.save(search);
         }
-        return ResponseDto.setSuccess("Success", ipo);
+        return ipoList;
 
     }
 
-    public ResponseDto<Void> deleteSearchWord(Integer searchId) {
+    public void deleteSearchWord(Integer searchId) {
         searchRepository.deleteById(searchId);
-        return ResponseDto.setSuccess();
     }
 
 

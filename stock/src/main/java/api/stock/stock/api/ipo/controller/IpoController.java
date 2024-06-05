@@ -1,5 +1,6 @@
 package api.stock.stock.api.ipo.controller;
 
+import api.stock.stock.api.ipo.domain.dto.IpoDto;
 import api.stock.stock.api.ipo.domain.entity.IpoEntity;
 import api.stock.stock.api.ipo.service.IpoService;
 import api.stock.stock.global.response.ResponseDto;
@@ -20,13 +21,15 @@ public class IpoController {
 
 
     @GetMapping("/list")
-    ResponseDto<List<IpoEntity>>getIpoList(){
-        return ipoService.getIpoList();
+    ResponseDto<List<IpoDto>>getIpoList(){
+        List<IpoDto> result = ipoService.getIpoList();
+        return ResponseDto.setSuccess(result);
     }
 
     @GetMapping("/{ipoName}")
-    ResponseDto<IpoEntity> getIpo(@PathVariable String ipoName){
-        return ipoService.getIpo(ipoName);
+    ResponseDto<IpoDto> getIpo(@PathVariable String ipoName){
+        IpoDto result = ipoService.getIpo(ipoName);
+        return ResponseDto.setSuccess(result);
     }
 
 }

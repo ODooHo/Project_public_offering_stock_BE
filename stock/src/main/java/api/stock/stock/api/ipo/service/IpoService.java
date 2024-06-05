@@ -2,6 +2,7 @@ package api.stock.stock.api.ipo.service;
 
 import api.stock.stock.api.exception.ErrorCode;
 import api.stock.stock.api.exception.IPOApplicationException;
+import api.stock.stock.api.ipo.domain.dto.IpoDto;
 import api.stock.stock.api.ipo.domain.entity.IpoEntity;
 import api.stock.stock.api.ipo.repository.IpoRepository;
 import api.stock.stock.global.response.ResponseDto;
@@ -22,24 +23,24 @@ public class IpoService {
         this.ipoRepository = ipoRepository;
     }
 
-    public ResponseDto<IpoEntity> getIpo(String ipoName) {
+    public IpoDto getIpo(String ipoName) {
         IpoEntity ipo = ipoRepository.findByIpoName(ipoName);
         if (ipo == null) {
             throw new IPOApplicationException(ErrorCode.IPO_NOT_FOUND, String.format("Ipo name is %s", ipoName));
         }
-        return ResponseDto.setSuccess("Success", ipo);
+        return IpoDto.from(ipo);
     }
 
 
-    public ResponseDto<List<IpoEntity>> getIpoList() {
-        return ResponseDto.setSuccess("Success", ipoRepository.findByOrderByDateDesc());
+    public List<IpoDto> getIpoList() {
+      return ipoRepository.findByOrderByDateDesc().stream().map(IpoDto::from).toList();
     }
 
-    public List<IpoEntity> findIpoByName(List<String> ipoList) {
-        return ipoRepository.findAllByIpoNameIn(ipoList);
+    public List<IpoDto> findIpoByName(List<String> ipoList) {
+        return ipoRepository.findAllByIpoNameIn(ipoList).stream().map(IpoDto::from).toList();
     }
 
-    public List<IpoEntity> searchIpo(String searchWord) {
-        return ipoRepository.findByIpoNameContains(searchWord);
+    public List<IpoDto> searchIpo(String searchWord) {
+        return ipoRepository.findByIpoNameContains(searchWord).stream().map(IpoDto::from).toList();
     }
 }

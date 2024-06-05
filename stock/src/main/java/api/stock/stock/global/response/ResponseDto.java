@@ -16,7 +16,7 @@ public class ResponseDto<T> {
         return new ResponseDto<T>("Success", null);
     }
 
-    public static <T> ResponseDto<T> setSuccess(String message, T data) {
+    public static <T> ResponseDto<T> setSuccess(T data) {
         return new ResponseDto<>("Success", data);
     }
 

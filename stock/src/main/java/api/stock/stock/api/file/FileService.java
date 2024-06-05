@@ -55,7 +55,7 @@ public class FileService {
      */
 
     @Transactional
-    public ResponseDto<Void> uploadImage(MultipartFile boardImage, BoardEntity board) {
+    public void uploadImage(MultipartFile boardImage, BoardEntity board) {
         if (boardImage != null) {
             String fileName = board.getBoardId() + ".jpg";
             board.setBoardImage(fileName);
@@ -65,11 +65,10 @@ public class FileService {
             board.setBoardImage(null);
         }
         boardRepository.save(board);
-        return ResponseDto.setSuccess();
     }
 
     @Transactional
-    public ResponseDto<Void> setProfile(MultipartFile file, String userEmail) {
+    public void setProfile(MultipartFile file, String userEmail) {
         UserEntity user = userRepository.findById(userEmail).orElseThrow(
                 () -> new IPOApplicationException(ErrorCode.USER_NOT_FOUND, String.format("user email is %s", userEmail))
         );
@@ -83,7 +82,6 @@ public class FileService {
             board.setBoardWriterProfile(fileName);
             boardRepository.save(board);
         }
-        return ResponseDto.setSuccess();
     }
 
     public ResponseEntity<byte[]> getProfileImage(String userEmail) {

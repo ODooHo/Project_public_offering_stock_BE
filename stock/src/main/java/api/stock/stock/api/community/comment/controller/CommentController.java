@@ -2,8 +2,6 @@ package api.stock.stock.api.community.comment.controller;
 
 import api.stock.stock.api.community.comment.domain.dto.CommentDto;
 import api.stock.stock.api.community.comment.domain.dto.PatchCommentDto;
-import api.stock.stock.api.community.comment.domain.dto.PatchCommentResponseDto;
-import api.stock.stock.api.community.comment.domain.entity.CommentEntity;
 import api.stock.stock.api.community.comment.service.CommentService;
 import api.stock.stock.global.response.ResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,23 +21,27 @@ public class CommentController {
     }
 
     @GetMapping("/{boardId}/comment")
-    ResponseDto<List<CommentEntity>> getComment(@PathVariable Integer boardId){
-        return commentService.getComment(boardId);
+    ResponseDto<List<CommentDto>> getComment(@PathVariable Integer boardId){
+        List<CommentDto> result = commentService.getComment(boardId);
+        return ResponseDto.setSuccess(result);
     }
 
     @PostMapping("/{boardId}/writeComment")
-    ResponseDto<CommentEntity> writeComment(@PathVariable Integer boardId, @RequestBody CommentDto requestBody){
-        return commentService.writeComment(boardId,requestBody);
+    ResponseDto<CommentDto> writeComment(@PathVariable Integer boardId, @RequestBody CommentDto requestBody){
+        CommentDto result = commentService.writeComment(boardId, requestBody);
+        return ResponseDto.setSuccess(result);
     }
 
     @PatchMapping("/{boardId}/edit/{commentId}")
-    ResponseDto<PatchCommentResponseDto> patchComment(@AuthenticationPrincipal String userEmail, @PathVariable Integer commentId, @RequestBody PatchCommentDto requestBody){
-        return commentService.patchComment(userEmail,commentId, requestBody);
+    ResponseDto<CommentDto> patchComment(@AuthenticationPrincipal String userEmail, @PathVariable Integer commentId, @RequestBody PatchCommentDto requestBody){
+        CommentDto result = commentService.patchComment(userEmail, commentId, requestBody);
+        return ResponseDto.setSuccess(result);
     }
 
     @DeleteMapping("/{boardId}/delete/{commentId}")
     ResponseDto<Void> deleteComment(@AuthenticationPrincipal String userEmail, @PathVariable Integer commentId){
-        return commentService.deleteComment(userEmail, commentId);
+        commentService.deleteComment(userEmail, commentId);
+        return ResponseDto.setSuccess();
     }
 
 

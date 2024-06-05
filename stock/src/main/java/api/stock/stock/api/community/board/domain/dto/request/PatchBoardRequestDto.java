@@ -1,4 +1,4 @@
-package api.stock.stock.api.community.board.domain.dto;
+package api.stock.stock.api.community.board.domain.dto.request;
 
 import lombok.*;
 
@@ -8,7 +8,7 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class PatchBoardDto {
+public class PatchBoardRequestDto {
     private String boardTitle;
     private String boardContent;
 }

@@ -10,4 +10,9 @@ import lombok.NoArgsConstructor;
 public class RefreshResponseDto {
     private String token;
     private Integer tokenExprTime;
+
+
+    public static RefreshResponseDto of(String token, Integer tokenExprTime){
+        return new RefreshResponseDto(token,tokenExprTime);
+    }
 }

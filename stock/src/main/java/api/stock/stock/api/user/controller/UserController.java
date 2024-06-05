@@ -1,7 +1,7 @@
 package api.stock.stock.api.user.controller;
 
 import api.stock.stock.api.file.FileService;
-import api.stock.stock.api.user.domain.dto.PatchUserResponseDto;
+import api.stock.stock.api.user.domain.dto.UserDto;
 import api.stock.stock.api.user.service.UserService;
 import api.stock.stock.global.response.ResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +31,12 @@ public class UserController {
 
 
     @PatchMapping("/patchUser")
-    public ResponseDto<PatchUserResponseDto> patchUser(
+    public ResponseDto<UserDto> patchUser(
             @RequestParam(value = "userNickname", required = false) String userNickname,
             @RequestParam(value = "userProfile",required = false) MultipartFile userProfile,
             @AuthenticationPrincipal String userEmail){
-        return userService.patchUser(userNickname,userProfile,userEmail);
+        UserDto result = userService.patchUser(userNickname, userProfile, userEmail);
+        return ResponseDto.setSuccess(result);
     }
 
     @DeleteMapping("/profile/delete")

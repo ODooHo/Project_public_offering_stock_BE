@@ -25,17 +25,17 @@ public class TradeService {
         this.modelMapper = modelMapper;
     }
 
-    public ResponseDto<TradeEntity> createTrade(TradeDto dto) {
+    public TradeDto createTrade(TradeDto dto) {
         String tradeName = dto.getTradeName();
         if (tradeRepository.existsByTradeName(tradeName)) {
             throw new IPOApplicationException(ErrorCode.DUPLICATED_TRADE_NAME);
         }
         TradeEntity trade = modelMapper.map(dto, TradeEntity.class);
         tradeRepository.save(trade);
-        return ResponseDto.setSuccess("Success", trade);
+        return TradeDto.from(trade);
     }
 
-    public ResponseDto<String> deleteTrade(String userEmail, Integer tradeId) {
+    public void deleteTrade(String userEmail, Integer tradeId) {
         TradeEntity trade = tradeRepository.findById(tradeId).orElseThrow(
                 () -> new IPOApplicationException(ErrorCode.TRADE_NOT_FOUND, String.format("trade Id is %s", tradeId))
         );
@@ -45,12 +45,11 @@ public class TradeService {
             throw new IPOApplicationException(ErrorCode.INVALID_PERMISSION);
         }
         tradeRepository.deleteById(tradeId);
-        return ResponseDto.setSuccess("Success", "Delete Completed");
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<List<TradeEntity>> getTradeList(String userEmail) {
-        return ResponseDto.setSuccess("Success", tradeRepository.findByUserEmail(userEmail));
+    public List<TradeDto> getTradeList(String userEmail) {
+        return tradeRepository.findByUserEmail(userEmail).stream().map(TradeDto::from).toList();
     }
 
 

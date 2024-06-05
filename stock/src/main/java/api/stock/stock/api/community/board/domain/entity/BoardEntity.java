@@ -28,4 +28,56 @@ public class BoardEntity {
     private int boardLikeCount;
     private int boardCommentCount;
 
+
+    public static BoardEntity of(
+            Integer boardId,
+            String boardTitle,
+            String boardContent,
+            String boardWriterEmail,
+            String boardWriterProfile,
+            String boardWriterNickname,
+            LocalDate boardWriteDate,
+            String boardImage,
+            int boardClickCount,
+            int boardLikeCount,
+            int boardCommentCount) {
+
+        return new BoardEntity(
+                boardId,
+                boardTitle,
+                boardContent,
+                boardWriterEmail,
+                boardWriterProfile,
+                boardWriterNickname,
+                boardWriteDate,
+                boardImage,
+                boardClickCount,
+                boardLikeCount,
+                boardCommentCount
+        );
+    }
+
+    public static BoardEntity of(
+            String boardTitle,
+            String boardContent,
+            String boardWriterEmail,
+            String boardWriterProfile,
+            String boardWriterNickname,
+            LocalDate boardWriteDate) {
+
+        return BoardEntity.of(
+                null,
+                boardTitle,
+                boardContent,
+                boardWriterEmail,
+                boardWriterProfile,
+                boardWriterNickname,
+                boardWriteDate,
+                null,
+                0,
+                0,
+                0
+        );
+    }
+
 }

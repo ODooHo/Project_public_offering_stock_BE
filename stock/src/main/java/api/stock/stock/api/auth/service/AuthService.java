@@ -1,15 +1,15 @@
 package api.stock.stock.api.auth.service;
 
-import api.stock.stock.api.auth.dto.response.RefreshResponseDto;
 import api.stock.stock.api.auth.dto.request.SignInDto;
-import api.stock.stock.api.auth.dto.response.SignInResponseDto;
 import api.stock.stock.api.auth.dto.request.SignUpDto;
+import api.stock.stock.api.auth.dto.response.RefreshResponseDto;
+import api.stock.stock.api.auth.dto.response.SignInResponseDto;
 import api.stock.stock.api.exception.ErrorCode;
 import api.stock.stock.api.exception.IPOApplicationException;
+import api.stock.stock.api.user.domain.dto.UserDto;
 import api.stock.stock.api.user.domain.entity.UserEntity;
-import api.stock.stock.global.response.ResponseDto;
-import api.stock.stock.global.security.TokenProvider;
 import api.stock.stock.api.user.repository.UserRepository;
+import api.stock.stock.global.security.TokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,32 +40,29 @@ public class AuthService {
         this.redisTemplate = redisTemplate;
     }
 
-    public ResponseDto<UserEntity> signUp(SignUpDto dto) {
+    public UserDto signUp(SignUpDto dto) {
         UserEntity userEntity = modelMapper.map(dto, UserEntity.class);
-
         String encodedPassword = passwordEncoder.encode(dto.getUserPassword());
         userEntity.setUserPassword(encodedPassword);
         userRepository.save(userEntity);
-        return ResponseDto.setSuccess("Success", userEntity);
+        return UserDto.from(userEntity);
     }
 
-    public ResponseDto<String> emailCheck(String userEmail) {
+    public void emailCheck(String userEmail) {
         if (userRepository.existsById(userEmail)) {
             throw new IPOApplicationException(ErrorCode.DUPLICATED_USER_EMAIL);
         }
-        return ResponseDto.setSuccess("Success", "available Email");
     }
 
-    public ResponseDto<String> nicknameCheck(String userNickname) {
+    public void nicknameCheck(String userNickname) {
         if (userRepository.existsByUserNickname(userNickname)) {
             throw new IPOApplicationException(ErrorCode.DUPLICATED_USER_NICKNAME);
         }
-        return ResponseDto.setSuccess("Success", "available Nickname");
     }
 
 
     @Transactional(readOnly = true)
-    public ResponseDto<SignInResponseDto> signIn(SignInDto dto) {
+    public SignInResponseDto signIn(SignInDto dto) {
         String userEmail = dto.getUserEmail();
         String userPassword = dto.getUserPassword();
 
@@ -85,27 +82,21 @@ public class AuthService {
         Integer refreshExprTime = 604800000;
 
 
-        SignInResponseDto signInResponseDto = new SignInResponseDto(token, exprTime, refreshToken, refreshExprTime, userEntity);
-        return ResponseDto.setSuccess("Success", signInResponseDto);
+        return SignInResponseDto.of(token, exprTime, refreshToken, refreshExprTime, UserDto.from(userEntity));
     }
 
-    public ResponseDto<Void> logout(String token) {
+    public void logout(String token) {
         Long expiration = tokenProvider.getExpiration(token);
         redisTemplate.opsForValue().set(token, "logout", expiration, TimeUnit.MILLISECONDS);
         redisTemplate.opsForSet().add("Blacklist", token);
-
-        return ResponseDto.setSuccess();
-
     }
 
-    public ResponseDto<RefreshResponseDto> getAccess(String refreshToken) {
+    public RefreshResponseDto getAccess(String refreshToken) {
         String accessToken = tokenProvider.createAccessTokenFromRefreshToken(refreshToken);
         Integer exprTime = 1800000;
 //            Integer exprTime = 5000;
 
-        RefreshResponseDto refreshResponseDto = new RefreshResponseDto(accessToken, exprTime);
-
-        return ResponseDto.setSuccess("Success", refreshResponseDto);
+        return RefreshResponseDto.of(accessToken, exprTime);
     }
 
 

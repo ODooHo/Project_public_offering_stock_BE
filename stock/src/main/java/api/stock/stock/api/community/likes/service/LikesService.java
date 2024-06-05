@@ -28,7 +28,7 @@ public class LikesService {
         this.modelMapper = modelMapper;
     }
 
-    public ResponseDto<LikesEntity> addLike(LikesDto dto) {
+    public LikesDto addLike(LikesDto dto) {
         boolean isLiked = likesRepository.existsByUserEmailAndBoardId(dto.getUserEmail(), dto.getBoardId());
         if (isLiked) {
             throw new IPOApplicationException(ErrorCode.DUPLICATED_LIKED, String.format("user email is %s", dto.getUserEmail()));
@@ -37,7 +37,7 @@ public class LikesService {
         Integer boardId = like.getBoardId();
         boardService.increaseLike(boardId);
         likesRepository.save(like);
-        return ResponseDto.setSuccess("Success", like);
+        return LikesDto.from(like);
     }
 
     public ResponseDto<Void> deleteLike(Integer boardId, String userEmail) {
@@ -49,14 +49,13 @@ public class LikesService {
     }
 
 
-    @Transactional(readOnly = true)
-    public ResponseDto<Void> updateLikesCount(Integer boardId) {
+    @Transactional
+    public void updateLikesCount(Integer boardId) {
         int check = boardService.getLikeCount(boardId);
         int count = likesRepository.countByBoardId(boardId);
         if (count != check) {
             boardService.updateLike(boardId, count);
         }
-        return ResponseDto.setSuccess();
     }
 
     public void deleteByBoard(Integer boardId) {

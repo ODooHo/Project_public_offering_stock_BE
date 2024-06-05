@@ -6,6 +6,7 @@ import api.stock.stock.api.auth.dto.request.SignUpDto;
 import api.stock.stock.api.auth.dto.response.RefreshResponseDto;
 import api.stock.stock.api.auth.dto.response.SignInResponseDto;
 import api.stock.stock.api.auth.service.AuthService;
+import api.stock.stock.api.user.domain.dto.UserDto;
 import api.stock.stock.api.user.domain.entity.UserEntity;
 import api.stock.stock.global.response.ResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,39 +26,46 @@ public class AuthController {
     }
 
     @PostMapping("/signUp")
-    public ResponseDto<UserEntity> signUp(@RequestBody SignUpDto requestBody){
-        return authService.signUp(requestBody);
+    public ResponseDto<UserDto> signUp(@RequestBody SignUpDto requestBody){
+        UserDto result = authService.signUp(requestBody);
+        return ResponseDto.setSuccess(result);
     }
 
     @PostMapping("/signUp/emailCheck/{userEmail}")
-    public ResponseDto<String> emailCheck(@PathVariable String userEmail){
-        return authService.emailCheck(userEmail);
+    public ResponseDto<Void> emailCheck(@PathVariable String userEmail){
+        authService.emailCheck(userEmail);
+        return ResponseDto.setSuccess();
     }
 
     @PostMapping("/signUp/nicknameCheck/{userNickname}")
-    public ResponseDto<String> nicknameCheck(@PathVariable String userNickname){
-        return authService.nicknameCheck(userNickname);
+    public ResponseDto<Void> nicknameCheck(@PathVariable String userNickname){
+        authService.nicknameCheck(userNickname);
+        return ResponseDto.setSuccess();
     }
 
 
     @PostMapping("/signIn")
     public ResponseDto<SignInResponseDto> signIn(@RequestBody SignInDto requestBody){
-        return authService.signIn(requestBody);
+        SignInResponseDto result = authService.signIn(requestBody);
+        return ResponseDto.setSuccess(result);
     }
 
     @PostMapping("/logout")
     public ResponseDto<Void> logout(@RequestHeader String token){
-        return authService.logout(token);
+        authService.logout(token);
+        return ResponseDto.setSuccess();
     }
 
     @PostMapping("/getAccess")
     public ResponseDto<RefreshResponseDto> getAccess(@RequestHeader String refreshToken){
-        return authService.getAccess(refreshToken);
+        RefreshResponseDto result = authService.getAccess(refreshToken);
+        return ResponseDto.setSuccess(result);
     }
 
     @DeleteMapping("/withDraw")
     public ResponseDto<Void> withDraw(@AuthenticationPrincipal String userEmail){
-        return deleteApplication.widthDraw(userEmail);
+        deleteApplication.widthDraw(userEmail);
+        return ResponseDto.setSuccess();
     }
 
 }

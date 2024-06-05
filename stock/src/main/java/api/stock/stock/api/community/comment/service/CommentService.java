@@ -2,13 +2,11 @@ package api.stock.stock.api.community.comment.service;
 
 import api.stock.stock.api.community.board.service.BoardService;
 import api.stock.stock.api.community.comment.domain.dto.CommentDto;
-import api.stock.stock.api.community.comment.domain.entity.CommentEntity;
 import api.stock.stock.api.community.comment.domain.dto.PatchCommentDto;
-import api.stock.stock.api.community.comment.domain.dto.PatchCommentResponseDto;
+import api.stock.stock.api.community.comment.domain.entity.CommentEntity;
 import api.stock.stock.api.community.comment.repository.CommentRepository;
 import api.stock.stock.api.exception.ErrorCode;
 import api.stock.stock.api.exception.IPOApplicationException;
-import api.stock.stock.global.response.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -33,37 +31,34 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<List<CommentEntity>> getComment(Integer boardId) {
-        List<CommentEntity> commentList = commentRepository.findByBoardId(boardId);
-        return ResponseDto.setSuccess("Success", commentList);
+    public List<CommentDto> getComment(Integer boardId) {
+        return commentRepository.findByBoardId(boardId).stream().map(CommentDto::from).toList();
     }
 
-    public ResponseDto<CommentEntity> writeComment(Integer boardId, CommentDto dto) {
+    public CommentDto writeComment(Integer boardId, CommentDto dto) {
         CommentEntity comment = modelMapper.map(dto, CommentEntity.class);
         comment.setCommentWriteDate(LocalDate.now());
         boardService.increaseComment(boardId);
         commentRepository.save(comment);
-        return ResponseDto.setSuccess("Success", comment);
+        return CommentDto.from(comment);
     }
 
-    public ResponseDto<PatchCommentResponseDto> patchComment(String userEmail, Integer commentId, PatchCommentDto dto) {
+    public CommentDto patchComment(String userEmail, Integer commentId, PatchCommentDto dto) {
         CommentEntity comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new IPOApplicationException(ErrorCode.COMMENT_NOT_FOUND, String.format("Not exists Comment"))
+                () -> new IPOApplicationException(ErrorCode.COMMENT_NOT_FOUND)
         );
         String commentUserEmail = comment.getCommentWriterEmail();
         if (!userEmail.equals(commentUserEmail)) {
-            throw new IPOApplicationException(ErrorCode.INVALID_PERMISSION, "InValid Permission");
+            throw new IPOApplicationException(ErrorCode.INVALID_PERMISSION);
         }
         comment.setCommentContent(dto.getCommentContent());
         comment.setCommentWriteDate(LocalDate.now());
         commentRepository.save(comment);
 
-        PatchCommentResponseDto response = new PatchCommentResponseDto(comment);
-
-        return ResponseDto.setSuccess("Success", response);
+        return CommentDto.from(comment);
     }
 
-    public ResponseDto<Void> deleteComment(String userEmail, Integer commentId) {
+    public void deleteComment(String userEmail, Integer commentId) {
         CommentEntity comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new IPOApplicationException(ErrorCode.COMMENT_NOT_FOUND, "Not exists Comment")
         );
@@ -75,17 +70,14 @@ public class CommentService {
 
         commentRepository.deleteById(commentId);
 
-        return ResponseDto.setSuccess();
     }
 
-    public ResponseDto<Void> deleteByBoard(Integer boardId) {
+    public void deleteByBoard(Integer boardId) {
         commentRepository.deleteAllByBoardId(boardId);
-        return ResponseDto.setSuccess();
     }
 
-    public ResponseDto<Void> deleteByWithdraw(String userEmail) {
+    public void  deleteByWithdraw(String userEmail) {
         commentRepository.deleteAllByCommentWriterEmail(userEmail);
-        return ResponseDto.setSuccess();
     }
 
 

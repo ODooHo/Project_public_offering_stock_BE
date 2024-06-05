@@ -20,4 +20,15 @@ public class UserEntity {
     private String userPhoneNumber;
     private String userProfile;
 
+
+    public static UserEntity of(String userEmail, String userPassword, String userNickname, String userPhoneNumber, String userProfile){
+        return new UserEntity(
+                userEmail,
+                userPassword,
+                userNickname,
+                userPhoneNumber,
+                userProfile
+        );
+    }
+
 }
