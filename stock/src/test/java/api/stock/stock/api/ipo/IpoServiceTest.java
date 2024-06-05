@@ -1,7 +1,10 @@
 package api.stock.stock.api.ipo;
 
-import api.stock.stock.api.ipo.favor.FavorRepository;
-import api.stock.stock.api.ipo.favor.FavorService;
+import api.stock.stock.api.ipo.domain.entity.IpoEntity;
+import api.stock.stock.api.ipo.favor.repository.FavorRepository;
+import api.stock.stock.api.ipo.favor.service.FavorService;
+import api.stock.stock.api.ipo.repository.IpoRepository;
+import api.stock.stock.api.ipo.service.IpoService;
 import api.stock.stock.global.response.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;

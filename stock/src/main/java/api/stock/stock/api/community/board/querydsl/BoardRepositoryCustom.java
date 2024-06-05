@@ -1,6 +1,6 @@
 package api.stock.stock.api.community.board.querydsl;
 
-import api.stock.stock.api.community.board.BoardEntity;
+import api.stock.stock.api.community.board.domain.entity.BoardEntity;
 
 import java.util.List;
 

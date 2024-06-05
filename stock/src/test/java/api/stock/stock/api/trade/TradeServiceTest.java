@@ -1,8 +1,11 @@
 package api.stock.stock.api.trade;
 
+import api.stock.stock.api.trade.domain.dto.TradeDto;
+import api.stock.stock.api.trade.domain.entity.TradeEntity;
+import api.stock.stock.api.trade.repository.TradeRepository;
+import api.stock.stock.api.trade.service.TradeService;
 import api.stock.stock.global.response.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Slf4j

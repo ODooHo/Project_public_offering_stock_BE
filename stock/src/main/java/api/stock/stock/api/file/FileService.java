@@ -1,11 +1,11 @@
 package api.stock.stock.api.file;
 
-import api.stock.stock.api.community.board.BoardEntity;
-import api.stock.stock.api.community.board.BoardRepository;
+import api.stock.stock.api.community.board.domain.entity.BoardEntity;
+import api.stock.stock.api.community.board.repository.BoardRepository;
 import api.stock.stock.api.exception.ErrorCode;
 import api.stock.stock.api.exception.IPOApplicationException;
-import api.stock.stock.api.user.UserEntity;
-import api.stock.stock.api.user.UserRepository;
+import api.stock.stock.api.user.domain.entity.UserEntity;
+import api.stock.stock.api.user.repository.UserRepository;
 import api.stock.stock.global.response.ResponseDto;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;

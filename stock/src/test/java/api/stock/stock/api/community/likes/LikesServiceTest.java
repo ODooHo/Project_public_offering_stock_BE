@@ -1,5 +1,7 @@
 package api.stock.stock.api.community.likes;
 
+import api.stock.stock.api.community.likes.repository.LikesRepository;
+import api.stock.stock.api.community.likes.service.LikesService;
 import api.stock.stock.global.response.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;

@@ -1,10 +1,12 @@
 package api.stock.stock.api.search;
 
-import api.stock.stock.api.community.board.BoardEntity;
-import api.stock.stock.api.ipo.IpoEntity;
+import api.stock.stock.api.community.board.domain.entity.BoardEntity;
+import api.stock.stock.api.ipo.domain.entity.IpoEntity;
+import api.stock.stock.api.search.domain.dto.SearchDto;
+import api.stock.stock.api.search.repository.SearchRepository;
+import api.stock.stock.api.search.service.SearchService;
 import api.stock.stock.global.response.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

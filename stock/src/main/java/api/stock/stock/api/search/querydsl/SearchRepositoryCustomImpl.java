@@ -1,7 +1,7 @@
 package api.stock.stock.api.search.querydsl;
 
 import api.stock.stock.api.search.QSearchEntity;
-import api.stock.stock.api.search.SearchEntity;
+import api.stock.stock.api.search.domain.entity.SearchEntity;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

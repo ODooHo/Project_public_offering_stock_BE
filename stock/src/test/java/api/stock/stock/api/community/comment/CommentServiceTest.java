@@ -1,20 +1,17 @@
 package api.stock.stock.api.community.comment;
 
-import api.stock.stock.api.community.board.BoardDto;
-import api.stock.stock.api.community.board.BoardEntity;
+import api.stock.stock.api.community.comment.domain.entity.CommentEntity;
+import api.stock.stock.api.community.comment.service.CommentService;
 import api.stock.stock.global.response.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 @Slf4j
 class CommentServiceTest {

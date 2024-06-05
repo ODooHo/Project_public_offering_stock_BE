@@ -1,15 +1,15 @@
 package api.stock.stock.api.app;
 
-import api.stock.stock.api.community.board.BoardService;
-import api.stock.stock.api.community.comment.CommentService;
-import api.stock.stock.api.community.likes.LikesService;
+import api.stock.stock.api.community.board.service.BoardService;
+import api.stock.stock.api.community.comment.service.CommentService;
+import api.stock.stock.api.community.likes.service.LikesService;
 import api.stock.stock.api.exception.ErrorCode;
 import api.stock.stock.api.exception.IPOApplicationException;
 import api.stock.stock.api.file.FileService;
-import api.stock.stock.api.ipo.favor.FavorService;
-import api.stock.stock.api.search.SearchService;
-import api.stock.stock.api.trade.TradeService;
-import api.stock.stock.api.user.UserService;
+import api.stock.stock.api.ipo.favor.service.FavorService;
+import api.stock.stock.api.search.service.SearchService;
+import api.stock.stock.api.trade.service.TradeService;
+import api.stock.stock.api.user.service.UserService;
 import api.stock.stock.global.response.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

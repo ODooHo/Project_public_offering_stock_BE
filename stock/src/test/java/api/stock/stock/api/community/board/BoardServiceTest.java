@@ -1,15 +1,15 @@
 package api.stock.stock.api.community.board;
 
+import api.stock.stock.api.community.board.domain.entity.BoardEntity;
+import api.stock.stock.api.community.board.service.BoardService;
 import api.stock.stock.global.response.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDate;
-
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 @Slf4j
 class BoardServiceTest {
