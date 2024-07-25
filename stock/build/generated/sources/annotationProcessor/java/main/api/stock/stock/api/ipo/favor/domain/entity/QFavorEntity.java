@@ -1,4 +1,4 @@
-package api.stock.stock.api.ipo.favor;
+package api.stock.stock.api.ipo.favor.domain.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,7 +15,7 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QFavorEntity extends EntityPathBase<FavorEntity> {
 
-    private static final long serialVersionUID = 1559893587L;
+    private static final long serialVersionUID = 1121759922L;
 
     public static final QFavorEntity favorEntity = new QFavorEntity("favorEntity");
 

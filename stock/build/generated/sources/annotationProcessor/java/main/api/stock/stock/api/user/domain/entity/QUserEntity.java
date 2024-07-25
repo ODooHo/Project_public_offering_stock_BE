@@ -1,4 +1,4 @@
-package api.stock.stock.api.user;
+package api.stock.stock.api.user.domain.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,7 +15,7 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QUserEntity extends EntityPathBase<UserEntity> {
 
-    private static final long serialVersionUID = -1835243943L;
+    private static final long serialVersionUID = -755422374L;
 
     public static final QUserEntity userEntity = new QUserEntity("userEntity");
 

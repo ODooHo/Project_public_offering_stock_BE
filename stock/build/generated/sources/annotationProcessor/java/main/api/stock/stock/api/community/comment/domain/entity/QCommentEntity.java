@@ -1,4 +1,4 @@
-package api.stock.stock.api.community.comment;
+package api.stock.stock.api.community.comment.domain.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,7 +15,7 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QCommentEntity extends EntityPathBase<CommentEntity> {
 
-    private static final long serialVersionUID = -1033584106L;
+    private static final long serialVersionUID = 1480232757L;
 
     public static final QCommentEntity commentEntity = new QCommentEntity("commentEntity");
 

@@ -11,6 +11,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +28,7 @@ import java.io.InputStream;
 import java.util.List;
 
 
+@RequiredArgsConstructor
 @Service
 @Slf4j
 public class FileService {
@@ -41,13 +43,6 @@ public class FileService {
     private String uploadDir;
 
 
-    @Autowired
-    public FileService(UserRepository userRepository, BoardRepository boardRepository, AmazonS3 amazonS3) {
-        this.userRepository = userRepository;
-        this.boardRepository = boardRepository;
-
-        this.amazonS3 = amazonS3;
-    }
 
     /**
      * entity 주고받는거 dto로 변환할 생각 해보자.

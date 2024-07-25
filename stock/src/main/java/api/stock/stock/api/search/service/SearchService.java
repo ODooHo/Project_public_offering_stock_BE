@@ -10,6 +10,7 @@ import api.stock.stock.api.search.domain.dto.SearchDto;
 import api.stock.stock.api.search.domain.entity.SearchEntity;
 import api.stock.stock.api.search.repository.SearchRepository;
 import api.stock.stock.global.response.ResponseDto;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 @Slf4j
@@ -27,12 +29,7 @@ public class SearchService {
     private final IpoService ipoService;
 
 
-    public SearchService(ModelMapper modelMapper, SearchRepository searchRepository, BoardService boardService, IpoService ipoService) {
-        this.modelMapper = modelMapper;
-        this.searchRepository = searchRepository;
-        this.boardService = boardService;
-        this.ipoService = ipoService;
-    }
+
 
     @Transactional(readOnly = true)
     public List<SearchDto> getRecentBoard(String userEmail) {

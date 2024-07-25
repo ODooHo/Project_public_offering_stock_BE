@@ -4,12 +4,14 @@ import api.stock.stock.api.file.FileService;
 import api.stock.stock.api.user.domain.dto.UserDto;
 import api.stock.stock.api.user.service.UserService;
 import api.stock.stock.global.response.ResponseDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/myPage")
 public class UserController {
@@ -17,11 +19,7 @@ public class UserController {
     private final UserService userService;
     private final FileService fileService;
 
-    @Autowired
-    public UserController(UserService userService, FileService fileService) {
-        this.userService = userService;
-        this.fileService = fileService;
-    }
+
 
 
     @GetMapping("/profile")

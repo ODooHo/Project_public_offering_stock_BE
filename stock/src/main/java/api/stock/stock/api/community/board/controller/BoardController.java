@@ -6,6 +6,8 @@ import api.stock.stock.api.community.board.domain.dto.request.PatchBoardRequestD
 import api.stock.stock.api.community.board.service.BoardService;
 import api.stock.stock.api.file.FileService;
 import api.stock.stock.global.response.ResponseDto;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/community/board")
 public class BoardController {
 
@@ -22,12 +25,6 @@ public class BoardController {
     private final FileService fileService;
     private final DeleteApplication deleteApplication;
 
-    @Autowired
-    public BoardController(BoardService boardService, FileService fileService, DeleteApplication deleteApplication) {
-        this.boardService = boardService;
-        this.fileService = fileService;
-        this.deleteApplication = deleteApplication;
-    }
 
     @PostMapping("/writeBoard")
     public ResponseDto<BoardDto> register(

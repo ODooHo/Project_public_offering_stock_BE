@@ -1,4 +1,4 @@
-package api.stock.stock.api.community.likes;
+package api.stock.stock.api.community.likes.domain.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,7 +15,7 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QLikesEntity extends EntityPathBase<LikesEntity> {
 
-    private static final long serialVersionUID = 450963792L;
+    private static final long serialVersionUID = -1371972753L;
 
     public static final QLikesEntity likesEntity = new QLikesEntity("likesEntity");
 

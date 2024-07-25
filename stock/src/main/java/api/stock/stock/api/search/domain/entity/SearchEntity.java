@@ -7,7 +7,6 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "Search")

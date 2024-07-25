@@ -7,6 +7,7 @@ import api.stock.stock.api.community.board.repository.BoardRepository;
 import api.stock.stock.api.exception.ErrorCode;
 import api.stock.stock.api.exception.IPOApplicationException;
 import api.stock.stock.api.file.FileService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 @Slf4j
@@ -23,13 +25,6 @@ public class BoardService {
     private final BoardRepository boardRepository;
 
     private final FileService fileService;
-
-
-    public BoardService(BoardRepository boardRepository, FileService fileService) {
-        this.boardRepository = boardRepository;
-
-        this.fileService = fileService;
-    }
 
 
     public BoardDto register(

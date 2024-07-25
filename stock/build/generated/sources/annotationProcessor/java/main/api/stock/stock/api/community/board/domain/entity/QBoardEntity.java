@@ -1,4 +1,4 @@
-package api.stock.stock.api.community.board;
+package api.stock.stock.api.community.board.domain.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,7 +15,7 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QBoardEntity extends EntityPathBase<BoardEntity> {
 
-    private static final long serialVersionUID = -2068018908L;
+    private static final long serialVersionUID = 1845176771L;
 
     public static final QBoardEntity boardEntity = new QBoardEntity("boardEntity");
 

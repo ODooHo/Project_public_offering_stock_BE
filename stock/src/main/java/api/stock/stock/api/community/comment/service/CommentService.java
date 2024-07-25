@@ -7,6 +7,7 @@ import api.stock.stock.api.community.comment.domain.entity.CommentEntity;
 import api.stock.stock.api.community.comment.repository.CommentRepository;
 import api.stock.stock.api.exception.ErrorCode;
 import api.stock.stock.api.exception.IPOApplicationException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 @Slf4j
@@ -23,12 +25,6 @@ public class CommentService {
     private final ModelMapper modelMapper;
     private final BoardService boardService;
 
-    public CommentService(CommentRepository commentRepository, ModelMapper modelMapper, BoardService boardService) {
-
-        this.commentRepository = commentRepository;
-        this.modelMapper = modelMapper;
-        this.boardService = boardService;
-    }
 
     @Transactional(readOnly = true)
     public List<CommentDto> getComment(Integer boardId) {

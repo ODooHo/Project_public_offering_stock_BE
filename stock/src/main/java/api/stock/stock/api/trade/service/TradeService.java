@@ -6,6 +6,7 @@ import api.stock.stock.api.trade.domain.dto.TradeDto;
 import api.stock.stock.api.trade.domain.entity.TradeEntity;
 import api.stock.stock.api.trade.repository.TradeRepository;
 import api.stock.stock.global.response.ResponseDto;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 @Slf4j
@@ -20,10 +22,6 @@ public class TradeService {
     private final TradeRepository tradeRepository;
     private final ModelMapper modelMapper;
 
-    public TradeService(TradeRepository tradeRepository, ModelMapper modelMapper) {
-        this.tradeRepository = tradeRepository;
-        this.modelMapper = modelMapper;
-    }
 
     public TradeDto createTrade(TradeDto dto) {
         String tradeName = dto.getTradeName();

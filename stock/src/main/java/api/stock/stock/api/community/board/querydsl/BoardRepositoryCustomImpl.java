@@ -1,7 +1,7 @@
 package api.stock.stock.api.community.board.querydsl;
 
 import api.stock.stock.api.community.board.domain.entity.BoardEntity;
-import api.stock.stock.api.community.board.QBoardEntity;
+import api.stock.stock.api.community.board.domain.entity.QBoardEntity;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

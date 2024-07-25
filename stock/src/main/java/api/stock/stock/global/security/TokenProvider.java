@@ -3,6 +3,7 @@ package api.stock.stock.global.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 // header : type (해당 토큰의 타입), alg (토큰을 서명하기위해 사용된 해시 알고리즘)
 // payload : sub (해당 토큰의 주인), iat (토큰이 발행된 시간), exp(토큰이 만료되는 시간)
+@RequiredArgsConstructor
 @Service
 @Slf4j
 public class TokenProvider {
@@ -27,10 +29,6 @@ public class TokenProvider {
     private String SECURITY_KEY;
 
     private final RedisTemplate<String, String> redisTemplate;
-
-    public TokenProvider(RedisTemplate<String, String> redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
 
     //jwt 생성하는 메서드
     public String createAccessToken(String userEmail) {

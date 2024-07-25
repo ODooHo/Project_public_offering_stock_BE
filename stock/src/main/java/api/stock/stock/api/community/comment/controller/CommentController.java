@@ -4,21 +4,19 @@ import api.stock.stock.api.community.comment.domain.dto.CommentDto;
 import api.stock.stock.api.community.comment.domain.dto.PatchCommentDto;
 import api.stock.stock.api.community.comment.service.CommentService;
 import api.stock.stock.global.response.ResponseDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/community/board")
 public class CommentController {
     private final CommentService commentService;
 
-    @Autowired
-    public CommentController(CommentService commentService) {
-        this.commentService = commentService;
-    }
 
     @GetMapping("/{boardId}/comment")
     ResponseDto<List<CommentDto>> getComment(@PathVariable Integer boardId){

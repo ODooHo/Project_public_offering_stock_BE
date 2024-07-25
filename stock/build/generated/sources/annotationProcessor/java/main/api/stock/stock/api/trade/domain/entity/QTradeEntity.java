@@ -1,4 +1,4 @@
-package api.stock.stock.api.trade;
+package api.stock.stock.api.trade.domain.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,7 +15,7 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QTradeEntity extends EntityPathBase<TradeEntity> {
 
-    private static final long serialVersionUID = 1797559141L;
+    private static final long serialVersionUID = 1276347076L;
 
     public static final QTradeEntity tradeEntity = new QTradeEntity("tradeEntity");
 

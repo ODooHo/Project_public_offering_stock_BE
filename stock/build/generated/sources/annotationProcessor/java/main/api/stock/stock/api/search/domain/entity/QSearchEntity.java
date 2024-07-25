@@ -1,4 +1,4 @@
-package api.stock.stock.api.search;
+package api.stock.stock.api.search.domain.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,7 +15,7 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QSearchEntity extends EntityPathBase<SearchEntity> {
 
-    private static final long serialVersionUID = -2130187527L;
+    private static final long serialVersionUID = 839713402L;
 
     public static final QSearchEntity searchEntity = new QSearchEntity("searchEntity");
 

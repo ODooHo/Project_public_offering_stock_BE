@@ -7,12 +7,14 @@ import api.stock.stock.api.community.likes.repository.LikesRepository;
 import api.stock.stock.api.exception.ErrorCode;
 import api.stock.stock.api.exception.IPOApplicationException;
 import api.stock.stock.global.response.ResponseDto;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 @Slf4j
@@ -21,12 +23,6 @@ public class LikesService {
     private final BoardService boardService;
     private final ModelMapper modelMapper;
 
-
-    public LikesService(LikesRepository likesRepository, BoardService boardService, ModelMapper modelMapper) {
-        this.likesRepository = likesRepository;
-        this.boardService = boardService;
-        this.modelMapper = modelMapper;
-    }
 
     public LikesDto addLike(LikesDto dto) {
         boolean isLiked = likesRepository.existsByUserEmailAndBoardId(dto.getUserEmail(), dto.getBoardId());

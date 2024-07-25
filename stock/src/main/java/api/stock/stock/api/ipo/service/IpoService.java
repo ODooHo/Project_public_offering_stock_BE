@@ -6,22 +6,20 @@ import api.stock.stock.api.ipo.domain.dto.IpoDto;
 import api.stock.stock.api.ipo.domain.entity.IpoEntity;
 import api.stock.stock.api.ipo.repository.IpoRepository;
 import api.stock.stock.global.response.ResponseDto;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
 @Slf4j
 public class IpoService {
     private final IpoRepository ipoRepository;
 
-
-    public IpoService(IpoRepository ipoRepository) {
-        this.ipoRepository = ipoRepository;
-    }
 
     public IpoDto getIpo(String ipoName) {
         IpoEntity ipo = ipoRepository.findByIpoName(ipoName);

@@ -8,19 +8,18 @@ import api.stock.stock.api.search.domain.dto.SearchDto;
 import api.stock.stock.api.search.domain.entity.SearchEntity;
 import api.stock.stock.api.search.service.SearchService;
 import api.stock.stock.global.response.ResponseDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/search")
 public class SearchController {
     private final SearchService searchService;
 
-    public SearchController(SearchService searchService) {
-        this.searchService = searchService;
-    }
 
     @GetMapping("/community")
     public ResponseDto<List<SearchDto>> getRecentBoard(@AuthenticationPrincipal String userEmail) {
